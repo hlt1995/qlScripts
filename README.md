@@ -50,7 +50,7 @@ pip3 install request
 ```
 ---
 
-## ☁ 移动云盘签到脚本
+## ☁️ 移动云盘签到脚本
 
 ### 脚本来自@Catlair大佬
 
@@ -60,7 +60,7 @@ pip3 install request
 - `caiyun.ql.mjs`：青龙启动脚本
 - `asign.json`：配置文件
 
-[和彩云](https://as.js.cool/reference/caiyun)
+[移动云盘](https://as.js.cool/reference/caiyun)
 [数据配置](https://as.js.cool/start/config)
 [推送配置](https://as.js.cool/reference/push)
 
