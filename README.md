@@ -66,11 +66,9 @@ pip3 install request
 
 ### 青龙脚本配置
 
-> 青龙任务命令
+> 青龙任务命令，建议每天运行两次
 ```
 task hlt1995_qlScripts/caiyun.ql.mjs
 ```
-
-> 青龙任务定时，建议每天运行两次
 
 ---
