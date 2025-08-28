@@ -26,3 +26,14 @@ YDNS：https://ydns.io
 点击bark通知即可跳转领取页面
 
 ---
+
+## 🗒️ 青龙面板升级以及依赖安装
+
+恢复包解压完成切换容器后，输入`startalpine`进入Alpine
+
+执行
+```
+cd /ql
+ql update
+
+```
