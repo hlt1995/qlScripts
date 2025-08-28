@@ -37,3 +37,15 @@ cd /ql
 ql update
 
 ```
+
+面板升级完成后，执行安装NodeJS依赖
+```
+cd /ql/data/scripts
+pnpm add axios sharp jsdom ds requests moment
+```
+
+执行安装Python3依赖
+```
+pip3 install request
+```
+---
