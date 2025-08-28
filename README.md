@@ -15,7 +15,7 @@ https://github.com/hlt1995/qlScripts.git
 
 YDNS：https://ydns.io
 
-环境变量：`YDNS_CONFIG` `DUCKDNS_CONFIG`
+环境变量：`YDNS_CONFIG`
 
 ---
 
