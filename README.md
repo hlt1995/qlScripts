@@ -45,7 +45,7 @@ pnpm add axios jsdom ds moment sharp@0.32.0
 
 执行安装Python3依赖
 ```
-pip3 install request
+pip3 install requests
 ```
 ---
 
