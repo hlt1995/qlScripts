@@ -35,7 +35,6 @@ YDNS：https://ydns.io
 ```
 cd /ql
 ql update
-
 ```
 
 面板升级完成后，执行安装NodeJS依赖
