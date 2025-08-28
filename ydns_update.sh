@@ -32,8 +32,8 @@ IPV4_API="http://members.3322.org/dyndns/getip"
 IPV6_API="https://api64.ipify.org"   # 获取IPv6
 
 # 上次IP记录文件路径
-IPV4_FILE="/ql/data/scripts/hlt1995_qlScript/ydns_last_ipv4.txt"
-IPV6_FILE="/ql/data/scripts/hlt1995_qlScript/ydns_last_ipv6.txt"
+IPV4_FILE="/ql/data/scripts/hlt1995_qlScripts/ydns_last_ipv4.txt"
+IPV6_FILE="/ql/data/scripts/hlt1995_qlScripts/ydns_last_ipv6.txt"
 
 DEBUG="${DEBUG:-false}"
 LOG="/dev/null"
