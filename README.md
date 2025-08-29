@@ -61,7 +61,14 @@ nano ~/.bashrc
 startalpine
 ```
 
-进入Alpine，执行：
+进入Alpine，首先安装nano编辑器
+
+```
+apk update
+apk add nano
+```
+
+安装完成后，执行：
 ```
 nano ~/.profile
 ```
