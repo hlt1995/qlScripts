@@ -51,25 +51,31 @@ pip3 install requests
 
 ## 🚀 自动执行青龙面板启动命令
 
-进入 Zerotermux
+进入 Zerotermux，执行：
 ```
 nano ~/.bashrc
 ```
+在文件中加入以下命令
 
-在文件中加上以下逻辑
 ```
-# 自动启动青龙面板
-startalpine <<'EOF'
-# 检查青龙进程是否在运行
+startalpine
+```
+
+进入Alpine，执行：
+```
+nano ~/.profile
+```
+
+在文件中加入以下逻辑
+```
+# 青龙面板自启动逻辑
 if pgrep -f "app.js" > /dev/null 2>&1; then
-  echo "青龙面板正在运行...
-输入 startalpine 进入 Alpine..."
+  echo "青龙面板已在运行，直接进入 Alpine..."
 else
   echo "青龙面板未运行，正在启动..."
   qinglong
 fi
-exec /bin/bash
-EOF
+
 ```
 
 ---
