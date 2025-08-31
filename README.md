@@ -53,8 +53,6 @@ pip3 install requests
 
 青龙脚本订阅拉库会默认创建内置sendNotify.js覆盖jdpro库中的sendNotify.js,因此需要手动替换/ql/data/deps下的sendNotify.js
 
-本库中的sendNotify.js基于jdpro库中的sendNotify.js做了少量改进
-
 下载sendNotify.js放在手机存储根目录后，Alpine下执行：
 ```
 cp -f /sdcard/sendNotify.js /ql/data/deps/sendNotify.js
