@@ -27,6 +27,31 @@ YDNS：https://ydns.io
 
 ---
 
+## ☁️ 移动云盘签到脚本
+
+### 文件说明
+
+- `caiyun-1.0.0-alpha.7.mjs`：移动云盘脚本
+- `caiyun.ql.mjs`：青龙启动脚本
+- `asign.json`：配置文件
+- `yidongyunpan.py`：移动云盘备用脚本
+
+[移动云盘](https://as.js.cool/reference/caiyun)
+[数据配置](https://as.js.cool/start/config)
+[推送配置](https://as.js.cool/reference/push)
+
+### 青龙脚本配置
+
+> 青龙任务命令，建议每天运行两次
+```
+task hlt1995_qlScripts/caiyun.ql.mjs
+```
+```
+task hlt1995_qlScripts/yidongyunpan.py
+```
+
+---
+
 ## 🗒️ 青龙面板升级以及依赖安装
 
 恢复包解压完成切换容器后，输入`startalpine`进入Alpine
@@ -100,26 +125,4 @@ fi
 ```
 
 ---
-
-## ☁️ 移动云盘签到脚本
-
-### 脚本来自@Catlair大佬
-
-### 文件说明
-
-- `caiyun-1.0.0-alpha.7.mjs`：移动云盘脚本
-- `caiyun.ql.mjs`：青龙启动脚本
-- `asign.json`：配置文件
-
-[移动云盘](https://as.js.cool/reference/caiyun)
-[数据配置](https://as.js.cool/start/config)
-[推送配置](https://as.js.cool/reference/push)
-
-### 青龙脚本配置
-
-> 青龙任务命令，建议每天运行两次
-```
-task hlt1995_qlScripts/caiyun.ql.mjs
-```
-
----
+#### 部分脚本来自网络，如有侵权，请联系删除！
