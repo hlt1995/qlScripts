@@ -4,7 +4,7 @@ const { config, message } = await loadConfig();
 
 // 使用配置中的第一个账号
 const { exchange, exchangeQuickly, sendMessage } = await useExchange(
-  config[0],
+  config[1],
   message
 );
 
@@ -34,12 +34,13 @@ const waitToTargetHour = (targetHour = 24) => {
 };
 
 // 根据需求选择等待的时间点
-// await waitToTargetHour(12); // 等待到12点
-await waitToTargetHour(16); // 等待到16点
-// await waitToTargetHour(24); // 等待到24点
+await waitToTargetHour(24); // 等待到12/16/24点
+
+// 用网易云举例，此处为 id 数组（可多个）
+await exchange([241229017]);
 
 // 快速兑换  奖品ID查询：https://m.mcloud.139.com/market/signin/page/exchangeList
-await exchangeQuickly(241229017, '奖品');
+// await exchangeQuickly(241229017, '奖品');
 
 // 发送推送
 await sendMessage();
