@@ -62,6 +62,8 @@ cp -f /sdcard/sendNotify.js /ql/data/deps/sendNotify.js
 
 ## 🚀 自动执行青龙面板启动命令
 
+为了避免手机意外重启导致青龙面板离线，可利用`MacroDroid`APP开机启动ZeroTermux，并在ZeroTermux中添加自动启动青龙面板命令
+
 进入 Zerotermux，执行：
 ```
 nano ~/.bashrc
