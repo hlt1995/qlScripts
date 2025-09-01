@@ -16,7 +16,7 @@
       "level": "passive",
       "group": "移动云盘签到",
       "icon": "https://bkimg.cdn.bcebos.com/pic/58ee3d6d55fbb2fb4316d9f6261e37a4462308f77680?x-bce-process=image/resize,m_lfit,w_536,limit_1/quality,Q_70",
-      "title": "云朵签到通知"
+      "title": "云朵资产统计"
     },
     "onlyError": true
   }
