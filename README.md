@@ -34,6 +34,7 @@ YDNS：https://ydns.io
 - `caiyun-1.0.0-alpha.7.mjs`：移动云盘脚本
 - `caiyun.ql.mjs`：青龙启动脚本
 - `asign.json`：配置文件
+- `Exchange.mjs`：奖品兑换
 - `yidongyunpan.py`：移动云盘备用脚本
 
 [移动云盘](https://as.js.cool/reference/caiyun)
