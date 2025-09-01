@@ -904,6 +904,6 @@ if __name__ == "__main__":
             msg = f"失效账号:\n{err_accounts}云朵数量: \n{user_amount}"
         else:
             msg = f"所有账号ck有效\n云朵数量: \n{user_amount}"
-        send('云朵数量统计', msg)
+        send('云朵资产统计', msg)
     else:
         print('通知服务不可用')
