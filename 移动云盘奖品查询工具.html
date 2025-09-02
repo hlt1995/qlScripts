@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>移动云盘奖品ID查询工具</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 800px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .description {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .search-box {
+            display: flex;
+            margin-bottom: 25px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px 0 0 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: #3498db;
+        }
+        
+        .search-button {
+            padding: 15px 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .search-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .result-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .result-title {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-label {
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+        
+        .result-value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .prize-list {
+            margin-top: 30px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f8f9fa;
+        }
+        
+        .prize-list-title {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        .prize-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .prize-item:hover {
+            background-color: #e3f2fd;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #ecf0f1;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                width: 95%;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-input {
+                border-radius: 8px;
+                margin-bottom: 10px;
+            }
+            
+            .search-button {
+                border-radius: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>移动云盘奖品ID查询工具</h1>
+        <p class="description">输入奖品名称，查询对应的prizeId、pOrder和groupId</p>
+        
+        <div class="search-box">
+            <input type="text" class="search-input" id="prizeName" placeholder="输入奖品名称，例如：5次文本AI工具">
+            <button class="search-button" id="searchBtn">查询</button>
+        </div>
+        
+        <div class="result-container" id="resultContainer">
+            <h2 class="result-title">查询结果</h2>
+            <div class="result-item">
+                <span class="result-label">奖品名称：</span>
+                <span class="result-value" id="resultName"></span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">奖品ID：</span>
+                <span class="result-value" id="resultId"></span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">排序值：</span>
+                <span class="result-value" id="resultOrder"></span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">分组ID：</span>
+                <span class="result-value" id="resultGroup"></span>
+            </div>
+        </div>
+        
+        <div class="prize-list">
+            <h3 class="prize-list-title">所有可用奖品列表（点击可自动填写）</h3>
+            <div id="prizeItems"></div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 移动云盘奖品查询工具 | 数据来源：https://m.mcloud.139.com</p>
+    </div>
+
+    <script>
+        // 奖品数据（实际应用中应从URL获取）
+        const prizeData = [
+            {"prizeName": "5次文本AI工具", "prizeId": 250411001, "pOrder": 10, "groupId": 0},
+            {"prizeName": "33次AI工具组合包", "prizeId": 250411002, "pOrder": 100, "groupId": 0},
+            {"prizeName": "100G个人云空间月卡", "prizeId": 250305011, "pOrder": 50, "groupId": 0},
+            {"prizeName": "100G个人云空间年卡", "prizeId": 250418001, "pOrder": 600, "groupId": 0},
+            {"prizeName": "1T个人云空间月卡", "prizeId": 250418002, "pOrder": 400, "groupId": 0},
+            {"prizeName": "1T个人云空间年卡", "prizeId": 250418003, "pOrder": 4800, "groupId": 0},
+            {"prizeName": "移动云盘白银会员月卡", "prizeId": 241229001, "pOrder": 500, "groupId": 0},
+            {"prizeName": "移动云盘白银会员季卡", "prizeId": 241229002, "pOrder": 1500, "groupId": 0},
+            {"prizeName": "移动云盘白银会员年卡", "prizeId": 241230060, "pOrder": 6000, "groupId": 0},
+            {"prizeName": "移动云盘黄金会员月卡", "prizeId": 241229004, "pOrder": 1000, "groupId": 0},
+            {"prizeName": "移动云盘黄金会员季卡", "prizeId": 241229005, "pOrder": 3000, "groupId": 0},
+            {"prizeName": "移动云盘黄金会员年卡", "prizeId": 241229006, "pOrder": 12000, "groupId": 0},
+            {"prizeName": "移动云盘钻石会员月卡", "prizeId": 241229007, "pOrder": 2500, "groupId": 0},
+            {"prizeName": "移动云盘钻石会员季卡", "prizeId": 241229008, "pOrder": 7500, "groupId": 0},
+            {"prizeName": "移动云盘钻石会员年卡", "prizeId": 241229009, "pOrder": 30000, "groupId": 0},
+            {"prizeName": "云手机专业版会员月卡", "prizeId": 250407001, "pOrder": 3800, "groupId": 0},
+            {"prizeName": "腾讯视频月卡", "prizeId": 241229019, "pOrder": 3000, "groupId": 1},
+            {"prizeName": "爱奇艺月卡", "prizeId": 241229017, "pOrder": 3000, "groupId": 1},
+            {"prizeName": "哔哩哔哩会员月卡", "prizeId": 241229018, "pOrder": 2500, "groupId": 1},
+            {"prizeName": "优酷视频月卡", "prizeId": 241229016, "pOrder": 3000, "groupId": 1},
+            {"prizeName": "腾讯视频周卡", "prizeId": 241229011, "pOrder": 1500, "groupId": 1},
+            {"prizeName": "爱奇艺视频周卡", "prizeId": 241229012, "pOrder": 1500, "groupId": 1},
+            {"prizeName": "优酷视频周卡", "prizeId": 241229013, "pOrder": 1500, "groupId": 1},
+            {"prizeName": "酷狗音乐月卡", "prizeId": 241229020, "pOrder": 1800, "groupId": 2},
+            {"prizeName": "QQ音乐月卡", "prizeId": 241229022, "pOrder": 1800, "groupId": 2},
+            {"prizeName": "美团外卖10元通用红包", "prizeId": 241229024, "pOrder": 1500, "groupId": 5},
+            {"prizeName": "美团外卖15元通用红包", "prizeId": 241229025, "pOrder": 2500, "groupId": 5},
+            {"prizeName": "美团外卖5元通用红包", "prizeId": 241229023, "pOrder": 1000, "groupId": 5},
+            {"prizeName": "菜鸟裹裹5元寄件券", "prizeId": 250401001, "pOrder": 600, "groupId": 7},
+            {"prizeName": "菜鸟裹裹10元寄件券", "prizeId": 250401004, "pOrder": 1200, "groupId": 7},
+            {"prizeName": "畅影SVIP单次转存券", "prizeId": 241229015, "pOrder": 400, "groupId": 8},
+            {"prizeName": "精品短剧十次转存券", "prizeId": 250725001, "pOrder": 1000, "groupId": 8},
+            {"prizeName": "精品试卷转存券", "prizeId": 241229014, "pOrder": 100, "groupId": 8},
+            {"prizeName": "WPS超级会员月卡", "prizeId": 250704001, "pOrder": 2800, "groupId": 9},
+            {"prizeName": "美图秀秀粉钻VIP月卡", "prizeId": 250408001, "pOrder": 2500, "groupId": 9},
+            {"prizeName": "作业帮VIP会员月卡", "prizeId": 241229010, "pOrder": 2000, "groupId": 9},
+            {"prizeName": "霸王茶姬16元满减券", "prizeId": 250717004, "pOrder": 1, "groupId": 10},
+            {"prizeName": "瑞幸咖啡26元服务饮品券", "prizeId": 250717008, "pOrder": 1, "groupId": 10},
+            {"prizeName": "蜜雪冰城5元优惠券", "prizeId": 250717005, "pOrder": 1, "groupId": 10},
+            {"prizeName": "霸王茶姬16元满减券", "prizeId": 250714007, "pOrder": 2000, "groupId": 11},
+            {"prizeName": "喜茶15元好礼券", "prizeId": 250714005, "pOrder": 2000, "groupId": 11},
+            {"prizeName": "瑞幸咖啡26元服务饮品券", "prizeId": 250715001, "pOrder": 2600, "groupId": 11},
+            {"prizeName": "蜜雪冰城10元优惠券", "prizeId": 250714008, "pOrder": 1200, "groupId": 11},
+            {"prizeName": "霸王茶姬10元满减券", "prizeId": 250714006, "pOrder": 1200, "groupId": 11},
+            {"prizeName": "蜜雪冰城5元优惠券", "prizeId": 250714012, "pOrder": 600, "groupId": 11}
+        ];
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            const prizeItemsContainer = document.getElementById('prizeItems');
+            
+            // 填充奖品列表
+            prizeData.forEach(prize => {
+                const prizeItem = document.createElement('div');
+                prizeItem.className = 'prize-item';
+                prizeItem.textContent = prize.prizeName;
+                prizeItem.addEventListener('click', () => {
+                    document.getElementById('prizeName').value = prize.prizeName;
+                    searchPrize();
+                });
+                prizeItemsContainer.appendChild(prizeItem);
+            });
+            
+            // 添加搜索按钮事件监听
+            document.getElementById('searchBtn').addEventListener('click', searchPrize);
+            
+            // 添加输入框回车事件监听
+            document.getElementById('prizeName').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchPrize();
+                }
+            });
+        });
+
+        // 搜索奖品函数
+        function searchPrize() {
+            const searchValue = document.getElementById('prizeName').value.trim();
+            if (!searchValue) {
+                alert('请输入奖品名称');
+                return;
+            }
+            
+            // 查找匹配的奖品（支持模糊搜索）
+            const result = prizeData.find(prize => 
+                prize.prizeName.includes(searchValue)
+            );
+            
+            const resultContainer = document.getElementById('resultContainer');
+            
+            if (result) {
+                document.getElementById('resultName').textContent = result.prizeName;
+                document.getElementById('resultId').textContent = result.prizeId;
+                document.getElementById('resultOrder').textContent = result.pOrder;
+                document.getElementById('resultGroup').textContent = result.groupId;
+                resultContainer.style.display = 'block';
+            } else {
+                resultContainer.style.display = 'none';
+                alert('未找到匹配的奖品，请检查输入是否正确');
+            }
+        }
+    </script>
+</body>
+</html>
