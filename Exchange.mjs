@@ -2,13 +2,18 @@ import { loadConfig, useExchange } from "./caiyun-1.0.0-alpha.7.mjs";
 
 const { config, message } = await loadConfig();
 
-// 使用配置中的第一个账号
+// 使用方法：
+// 1.输入兑换账号       config[]
+// 2.输入兑换时间点     waitToTargetHour()
+// 3.输入兑换奖品的ID   exchange([])
+
+// 1.使用配置中的指定账号 举例config[0]=配置中的第一个账号
 const { exchange, exchangeQuickly, sendMessage } = await useExchange(
   config[1],
   message
 );
 
-// 自定义等待到指定时间点的函数（最大等待2分钟）
+// 自定义等待到指定时间点（最大等待2分钟）
 const waitToTargetHour = (targetHour = 24) => {
   const now = new Date();
   const target = new Date();
@@ -33,13 +38,13 @@ const waitToTargetHour = (targetHour = 24) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-// 根据需求选择等待的时间点
+// 2.根据需求选择等待的时间点
 await waitToTargetHour(24); // 等待到12/16/24点
 
-// 用网易云举例，此处为 id 数组（可多个）
+// 3.此处为 id 数组（可多个）
 await exchange([241229017]);
 
-// 快速兑换  奖品ID查询：https://m.mcloud.139.com/market/signin/page/exchangeList
+// 快速兑换,如果需要自定义逻辑，可以使用这个 api，在兑换前不会有校验
 // await exchangeQuickly(241229017, '奖品');
 
 // 发送推送
