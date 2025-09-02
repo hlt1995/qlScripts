@@ -2,14 +2,15 @@ import { loadConfig, useExchange } from "./caiyun-1.0.0-alpha.7.mjs";
 
 const { config, message } = await loadConfig();
 
-// 使用方法：
-// 1.输入兑换账号       config[]
-// 2.输入兑换时间点     waitToTargetHour()
-// 3.输入兑换奖品的ID   exchange([])
+// =================== 配置参数 ===================
+const ACCOUNT_INDEX = 3;           // 兑换账号索引（0表示第一个账号）
+const TARGET_HOUR = 16;            // 兑换时间点（可选12/16/24）
+const EXCHANGE_IDS = [241229017];  // 兑换奖品ID
+// ================================================
 
-// 1.使用配置中的指定账号 举例config[0]=配置中的第一个账号
+// 使用配置中的指定账号
 const { exchange, exchangeQuickly, sendMessage } = await useExchange(
-  config[1],
+  config[ACCOUNT_INDEX],
   message
 );
 
@@ -38,14 +39,14 @@ const waitToTargetHour = (targetHour = 24) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-// 2.根据需求选择等待的时间点
-await waitToTargetHour(24); // 等待到12/16/24点
+// 选择兑换的时间点
+await waitToTargetHour(TARGET_HOUR); // 等待到12/16/24点
 
 // 3.此处为 id 数组（可多个）
-await exchange([241229017]);
+await exchange(EXCHANGE_IDS);
 
 // 快速兑换,如果需要自定义逻辑，可以使用这个 api，在兑换前不会有校验
-// await exchangeQuickly(241229017, '奖品');
+// await exchangeQuickly(EXCHANGE_IDS, '奖品');
 
 // 发送推送
 await sendMessage();
