@@ -43,7 +43,7 @@ YDNS：https://ydns.io
 
 ### 青龙脚本配置
 
-> 青龙任务命令，建议每天运行两次
+> 青龙任务命令，建议每天各运行一次
 ```
 task hlt1995_qlScripts/caiyun.ql.mjs
 ```
