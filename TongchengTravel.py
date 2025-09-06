@@ -18,7 +18,7 @@ import httpx
 
 from fn_print import fn_print
 from get_env import get_env
-#from sendNotify import send_notification_message_collection
+from sendNotify import send_notification_message_collection
 
 tc_cookies = get_env("tc_cookie", "@")
 
@@ -242,4 +242,4 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
-    send_notification_message_collection(f"同程旅行签到通知 - {datetime.now().strftime('%Y/%m/%d')}")
+    #send_notification_message_collection(f"同程旅行签到通知 - {datetime.now().strftime('%Y/%m/%d')}")
