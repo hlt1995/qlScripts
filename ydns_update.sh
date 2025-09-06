@@ -28,7 +28,7 @@ if [ -z "$YDNS_HOST" ] || [ -z "$YDNS_USER" ] || [ -z "$YDNS_PASS" ] || [ -z "$I
 fi
 
 # API
-IPV4_API="http://members.3322.org/dyndns/getip"
+IPV4_API="http://members.3322.org/dyndns/getip"   # 获取IPv4
 IPV6_API="https://api64.ipify.org"   # 获取IPv6
 
 # 上次IP记录文件路径
