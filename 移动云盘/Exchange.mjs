@@ -5,7 +5,7 @@ const { config, message } = await loadConfig();
 // 定时任务设定为兑换时间点前2分钟
 
 // =================== 配置参数 ===================
-const ACCOUNT_INDEX = 3;           // 兑换账号索引（0表示第一个账号）
+const ACCOUNT_INDEX = 0;           // 兑换账号索引（0表示第一个账号）
 const TARGET_HOUR = 16;            // 兑换时间点（可选12/16/24）
 const EXCHANGE_IDS = [241229017];  // 兑换奖品ID
 // ================================================
@@ -41,10 +41,10 @@ const waitToTargetHour = (targetHour = 24) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-// 选择兑换的时间点
+// 兑换的时间点
 await waitToTargetHour(TARGET_HOUR);
 
-// 3.此处为 id 数组（可多个）
+// 兑换的奖品ID
 await exchange(EXCHANGE_IDS);
 
 // 快速兑换,如果需要自定义逻辑，可以使用这个 api，在兑换前不会有校验
