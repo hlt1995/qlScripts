@@ -242,4 +242,4 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
-    #send_notification_message_collection(f"同程旅行签到通知 - {datetime.now().strftime('%Y/%m/%d')}")
+    send_notification_message_collection(f"同程旅行签到通知 - {datetime.now().strftime('%Y/%m/%d')}")
