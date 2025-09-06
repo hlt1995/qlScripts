@@ -6,6 +6,8 @@
 变量名 XMQB_KEY 卡密  关注公众号【极客快乐营】发送【小米钱包】获取KEY
 
 '''
+# const $ = new Env('小米钱包');
+
 import os
 keys = os.getenv("XMQB_KEY")
 if keys == "":
