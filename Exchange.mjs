@@ -39,10 +39,10 @@ const waitToTargetHour = (targetHour = 24) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-// 选择兑换的时间点
-await waitToTargetHour(TARGET_HOUR); // 等待到12/16/24点
+// 兑换的时间点
+await waitToTargetHour(TARGET_HOUR);
 
-// 3.此处为 id 数组（可多个）
+// 兑换的奖品ID（可多个）
 await exchange(EXCHANGE_IDS);
 
 // 快速兑换,如果需要自定义逻辑，可以使用这个 api，在兑换前不会有校验
