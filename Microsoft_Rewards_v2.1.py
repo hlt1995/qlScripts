@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+# cron: 1 7 * * 7
+# const $ = new Env("微软积分");
 """
 🎯 Bing Rewards 自动化脚本 - 多账号分离版-v2.1
 
@@ -24,7 +27,6 @@ Cookie验证规则：
 4. 设置环境变量 bing_token_1、bing_token_2、bing_token_3...
 
 From:yaohuo28507
-cron: 10 0-22 * * *
 
 """
 
