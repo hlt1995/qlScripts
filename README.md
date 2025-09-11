@@ -45,10 +45,10 @@ YDNS：https://ydns.io
 
 > 青龙任务命令，建议每天各运行一次
 ```
-task hlt1995_qlScripts/caiyun.ql.mjs
+task hlt1995_qlScripts/移动云盘/caiyun.ql.mjs
 ```
 ```
-task hlt1995_qlScripts/mcloud.py
+task hlt1995_qlScripts/移动云盘/mcloud.py
 ```
 
 ---
