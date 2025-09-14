@@ -29,27 +29,10 @@ YDNS：https://ydns.io
 
 ## ☁️ 移动云盘签到脚本
 
-### 文件说明
+- `mcloud.py`：移动云盘脚本
 
-- `caiyun-1.0.0-alpha.7.mjs`：移动云盘脚本
-- `caiyun.ql.mjs`：青龙启动脚本
-- `asign.json`：配置文件
-- `Exchange.mjs`：奖品兑换
-- `mcloud.py`：移动云盘备用脚本
+环境变量：`ydypCk`
 
-[移动云盘](https://as.js.cool/reference/caiyun)
-[数据配置](https://as.js.cool/start/config)
-[推送配置](https://as.js.cool/reference/push)
-
-### 青龙脚本配置
-
-> 青龙任务命令，建议每天各运行一次
-```
-task hlt1995_qlScripts/移动云盘/caiyun.ql.mjs
-```
-```
-task hlt1995_qlScripts/移动云盘/mcloud.py
-```
 
 ---
 
