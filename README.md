@@ -31,8 +31,9 @@ YDNS：https://ydns.io
 
 - `mcloud.py`：移动云盘脚本
 
-环境变量：`ydypCk`
+环境变量：`ydypCK`
 
+CK格式：`Authorization#手机号#00`
 
 ---
 
