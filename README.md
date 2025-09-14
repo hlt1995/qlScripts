@@ -1,7 +1,8 @@
 ## 🔗 拉库地址
 
-```plaintext
-https://github.com/hlt1995/qlScripts.git "" "Backup"
+```
+ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
+
 ```
 
 拉取的文件后缀名：`js sh py mjs json`
