@@ -11,15 +11,17 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 ## 🌐 自动更新YDNS动态域名服务的IP地址
 
-同时支持A/AAAA地址解析
+- `ydns_update.sh`
 
-YDNS：https://ydns.io
+支持A/AAAA地址解析，注册地址：[https://ydns.io](https://ydns.io)
 
 环境变量：`YDNS_CONFIG`
 
 ---
 
 ## 🎮️ Epic免费游戏领取提醒
+
+- `EpicGamesNotify.js`
 
 只写了bark推送，bark_Key直接读取配置文件config.sh中的`export BARK_PUSH=""`
 
@@ -29,7 +31,7 @@ YDNS：https://ydns.io
 
 ## ☁️ 移动云盘签到脚本
 
-- `mcloud.py`：移动云盘脚本
+- `mcloud.py`
 
 环境变量：`ydypCK`
 
