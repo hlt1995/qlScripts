@@ -16,6 +16,8 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 环境变量：`YDNS_CONFIG`
 
+>支持IPv4/IPv6地址解析，添加IP变动检测避免过度请求
+
 >主页：[https://ydns.io](https://ydns.io)
 
 
@@ -23,7 +25,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 - `EpicGamesNotify.js`
 
-Bark推送
+支持Bark推送
 
 >点击bark通知即可跳转领取页面
 
@@ -36,14 +38,14 @@ Bark推送
 
 >浏览器登录[https://yun.139.com/w/#/index](https://yun.139.com/w/#/index)抓取cookie
 
->CK格式：`Authorization#手机号#00`
+>CK格式：`Authorization#手机号#00` `@`
 
 
 ### 🏅 Microsoft Rewards 自动积分
 
 - `Microsoft_Rewards_v2.1.py`
 
-环境变量：`bing_ck_1`
+环境变量：`bing_ck_1` `bing_ck_2`
 
 >浏览器登录[https://cn.bing.com/](https://cn.bing.com/)点击<ins>查看仪表板</ins>
 
@@ -75,14 +77,14 @@ Bark推送
 
 >搜索 https://app.17u.cn/welfarecenter/index/signIndex 的请求头，找到`appToken` `device`
 
->CK格式：`手机号#apptoken#device` `@`
+>CK格式：`手机号#appToken#device` `@`
 
 
 ---
 
-## 🗒️ 青龙面板升级以及依赖安装
+## 🗒️ 青龙面板升级和依赖安装
 
-恢复包解压完成切换容器后，输入`startalpine`进入Alpine
+恢复包解压完成并切换容器后，输入`startalpine`进入Alpine
 
 执行
 ```
@@ -121,13 +123,13 @@ cp -f /sdcard/sendNotify.js /ql/data/deps/sendNotify.js
 ```
 nano ~/.bashrc
 ```
-在文件中加入以下命令
+在文件中加入以下命令并保存
 
 ```
 startalpine
 ```
 
-进入Alpine，首先安装nano编辑器
+输入`startalpine`进入Alpine，建议安装nano编辑器
 
 ```
 apk update
@@ -139,9 +141,9 @@ apk add nano
 nano ~/.profile
 ```
 
-在文件中加入以下逻辑
+在文件中加入以下命令并保存
 ```
-# 青龙面板自启动逻辑
+# 青龙面板自启动
 if pgrep -f "app.js" > /dev/null 2>&1; then
   echo -e "\033[1;32m✔ [QL-PANEL] 青龙面板正在运行\033[0m
 "
