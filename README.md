@@ -62,7 +62,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 >手机开启抓包软件，进入微信->小程序->我的->积分
 
->搜索 https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/activityRedirect?source=xxxxxxxxxxxx 的请求链接
+>搜索 https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/activityRedirect?source= 的请求链接
 
 >CK格式：`整段url` `@`
 
