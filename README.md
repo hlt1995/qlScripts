@@ -9,17 +9,17 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 > 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行[部署教程参考①](https://blog.csdn.net/a18065597272/article/details/132633015)  [②](https://blog.csdn.net/a18065597272/article/details/129752658?ops_request_misc=&request_id=&biz_id=102&utm_term=%E9%9D%92%E9%BE%99%E9%9D%A2%E6%9D%BF2.15%E6%81%A2%E5%A4%8D%E5%8C%85&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-3-129752658.142^v102^pc_search_result_base5&spm=1018.2226.3001.4187)
 ---
 ## 🔖 脚本说明
-### 🌐 自动更新YDNS动态域名服务的IP地址
 
-#### - `ydns_update.sh`
+#### 🌐 自动更新YDNS动态域名服务的IP地址
+
+- `ydns_update.sh`
 
 支持A/AAAA地址解析，注册地址：[https://ydns.io](https://ydns.io)
 
 环境变量：`YDNS_CONFIG`
 
----
 
-## 🎮️ Epic免费游戏领取提醒
+#### 🎮️ Epic免费游戏领取提醒
 
 - `EpicGamesNotify.js`
 
