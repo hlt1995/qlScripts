@@ -67,7 +67,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 >CK格式：`整段url` `@`
 
 
-### 🚂 同程旅行每日签到
+### ✈️ 同程旅行每日签到
 
 - `TongchengTravel.py`
 
