@@ -21,8 +21,6 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 >注册地址：[https://ydns.io](https://ydns.io)
 
 
-
-
 ### 🎮️ Epic免费游戏领取提醒
 
 - `EpicGamesNotify.js`
