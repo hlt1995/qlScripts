@@ -14,28 +14,45 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 - `ydns_update.sh`
 
-支持A/AAAA地址解析，注册地址：[https://ydns.io](https://ydns.io)
-
 环境变量：`YDNS_CONFIG`
+
+主页：[https://ydns.io](https://ydns.io)
 
 
 #### 🎮️ Epic免费游戏领取提醒
 
 - `EpicGamesNotify.js`
 
-只写了bark推送，bark_Key直接读取配置文件config.sh中的`export BARK_PUSH=""`
+Bark推送
 
-点击bark通知即可跳转领取页面
+> 点击bark通知即可跳转领取页面
 
----
 
-## ☁️ 移动云盘签到脚本
+#### ☁️ 移动云盘签到
 
 - `mcloud.py`
 
 环境变量：`ydypCK`
 
-CK格式：`Authorization#手机号#00`
+> CK格式：`Authorization#手机号#00`
+
+
+#### 🏅 Microsoft Rewards 自动积分
+
+- `Microsoft_Rewards_v2.1.py`
+
+环境变量：`bing_ck_1`
+
+> 抓取包含tifacfaatcs和.MSA.Auth字段的Cookie
+
+
+#### 📦️ 顺丰速运每日任务
+
+- `SFExpress.py`
+
+环境变量：`sfsy_url`
+
+
 
 ---
 
