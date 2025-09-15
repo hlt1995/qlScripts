@@ -18,8 +18,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 >主页：[https://ydns.io](https://ydns.io)
 
-<hr style="height:0.1px;border:none;border-top:0.5px solid #eee;" />
-
+#### ---
 #### 🎮️ Epic免费游戏领取提醒
 
 - `EpicGamesNotify.js`
