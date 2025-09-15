@@ -14,9 +14,9 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 - `ydns_update.sh` &emsp;环境变量：`YDNS_CONFIG`
 
->支持IPv4/IPv6地址解析，添加IP变动检测避免过度请求
+>支持IPv4/IPv6地址解析，添加IP变动检测避免过度请求，注册地址：[https://ydns.io](https://ydns.io)
 
->注册地址：[https://ydns.io](https://ydns.io)
+>CK格式：`域名|用户名|密码|记录类型`
 
 
 ### 🎮️ Epic免费游戏领取提醒
