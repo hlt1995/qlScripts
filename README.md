@@ -30,7 +30,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 ### ☁️ 移动云盘签到
 
-- `mcloud.py`    环境变量：`ydypCK`
+- `mcloud.py` &emsp;环境变量：`ydypCK`
 
 >浏览器登录 [https://yun.139.com/w/#/index](https://yun.139.com/w/#/index) 抓取cookie
 
@@ -39,9 +39,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 ### 🏅 Microsoft Rewards 自动积分
 
-- `Microsoft_Rewards_v2.1.py`
-
-环境变量：`bing_ck_1` `bing_ck_2`
+- `Microsoft_Rewards_v2.1.py` &emsp;环境变量：`bing_ck_1`
 
 >浏览器登录 [https://cn.bing.com/](https://cn.bing.com/) 点击 <ins>查看仪表板</ins>
 
@@ -52,9 +50,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 ### 📦️ 顺丰速运每日任务
 
-- `SFExpress.py`
-
-环境变量：`sfsy_url`
+- `SFExpress.py` &emsp;环境变量：`sfsy_url`
 
 >手机开启抓包软件，进入微信->小程序->我的->积分
 
@@ -65,9 +61,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 ### ✈️ 同程旅行每日签到
 
-- `TongchengTravel.py`
-
-环境变量：`tc_cookie`
+- `TongchengTravel.py` &emsp;环境变量：`tc_cookie`
 
 >手机开启抓包软件，进入同程旅行->领福利->点击签到
 
