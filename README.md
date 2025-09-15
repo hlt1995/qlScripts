@@ -12,7 +12,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 ### 🌐 自动更新YDNS动态域名
 
-- `ydns_update.sh`  环境变量：`YDNS_CONFIG`
+- `ydns_update.sh`    环境变量：`YDNS_CONFIG`
 
 >支持IPv4/IPv6地址解析，添加IP变动检测避免过度请求
 
@@ -30,9 +30,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 ### ☁️ 移动云盘签到
 
-- `mcloud.py`
-
-环境变量：`ydypCK`
+- `mcloud.py`    环境变量：`ydypCK`
 
 >浏览器登录 [https://yun.139.com/w/#/index](https://yun.139.com/w/#/index) 抓取cookie
 
