@@ -10,7 +10,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 ---
 ## 🔖 脚本说明
 
-#### 🌐 自动更新YDNS动态域名
+### 🌐 自动更新YDNS动态域名
 
 - `ydns_update.sh`
 
@@ -19,7 +19,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 >主页：[https://ydns.io](https://ydns.io)
 
 
-#### 🎮️ Epic免费游戏领取提醒
+### 🎮️ Epic免费游戏领取提醒
 
 - `EpicGamesNotify.js`
 
@@ -28,47 +28,55 @@ Bark推送
 >点击bark通知即可跳转领取页面
 
 
-#### ☁️ 移动云盘签到
+### ☁️ 移动云盘签到
 
 - `mcloud.py`
 
 环境变量：`ydypCK`
 
 >浏览器登录[https://yun.139.com/w/#/index](https://yun.139.com/w/#/index)抓取cookie
+
 >CK格式：`Authorization#手机号#00`
 
 
-#### 🏅 Microsoft Rewards 自动积分
+### 🏅 Microsoft Rewards 自动积分
 
 - `Microsoft_Rewards_v2.1.py`
 
 环境变量：`bing_ck_1`
 
 >浏览器登录[https://cn.bing.com/](https://cn.bing.com/)点击<ins>查看仪表板</ins>
+
 >抓取包含`tifacfaatcs`和`.MSA.Auth`字段的Cookie
+
 >CK格式：`整段Cookie`
 
 
-#### 📦️ 顺丰速运每日任务
+### 📦️ 顺丰速运每日任务
 
 - `SFExpress.py`
 
 环境变量：`sfsy_url`
 
 >手机开启抓包软件，进入微信->小程序->我的->积分
+
 >搜索 https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/activityRedirect?source=xxxxxxxxxxxx 的请求链接
+
 >CK格式：`整段url` `@`
 
 
-#### 🚂 同程旅行每日签到
+### 🚂 同程旅行每日签到
 
 - `TongchengTravel.py`
 
 环境变量：`tc_cookie`
 
 >手机开启抓包软件，进入同程旅行->领福利->点击签到
+
 >搜索 https://app.17u.cn/welfarecenter/index/signIndex 的请求头，找到`appToken` `device`
+
 >CK格式：`手机号#apptoken#device` `@`
+
 
 ---
 
