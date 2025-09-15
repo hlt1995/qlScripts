@@ -18,7 +18,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 >主页：[https://ydns.io](https://ydns.io)
 
-<hr style="height:1px;border:none;border-top:0.1px solid #eee;" />
+<hr style="height:0.1px;border:none;border-top:0.5px solid #eee;" />
 
 #### 🎮️ Epic免费游戏领取提醒
 
@@ -26,7 +26,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 Bark推送
 
-> 点击bark通知即可跳转领取页面
+>点击bark通知即可跳转领取页面
 
 
 #### ☁️ 移动云盘签到
@@ -35,7 +35,7 @@ Bark推送
 
 环境变量：`ydypCK`
 
-> CK格式：`Authorization#手机号#00`
+>CK格式：`Authorization#手机号#00`
 
 
 #### 🏅 Microsoft Rewards 自动积分
@@ -44,7 +44,7 @@ Bark推送
 
 环境变量：`bing_ck_1`
 
-> 抓取包含tifacfaatcs和.MSA.Auth字段的Cookie
+>抓取包含tifacfaatcs和.MSA.Auth字段的Cookie
 
 
 #### 📦️ 顺丰速运每日任务
