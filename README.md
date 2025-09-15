@@ -16,9 +16,9 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 环境变量：`YDNS_CONFIG`
 
-主页：[https://ydns.io](https://ydns.io)
+>主页：[https://ydns.io](https://ydns.io)
 
-<hr style="height:1px;border:none;border-top:0.5px solid #eee;" />
+<hr style="height:1px;border:none;border-top:0.1px solid #eee;" />
 
 #### 🎮️ Epic免费游戏领取提醒
 
