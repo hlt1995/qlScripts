@@ -18,7 +18,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 >支持IPv4/IPv6地址解析，添加IP变动检测避免过度请求
 
->主页：[https://ydns.io](https://ydns.io)
+>注册地址：[https://ydns.io](https://ydns.io)
 
 
 ### 🎮️ Epic免费游戏领取提醒
@@ -36,7 +36,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 环境变量：`ydypCK`
 
->浏览器登录[https://yun.139.com/w/#/index](https://yun.139.com/w/#/index)抓取cookie
+>浏览器登录 [https://yun.139.com/w/#/index](https://yun.139.com/w/#/index) 抓取cookie
 
 >CK格式：`Authorization#手机号#00` `@`
 
@@ -47,7 +47,7 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 环境变量：`bing_ck_1` `bing_ck_2`
 
->浏览器登录[https://cn.bing.com/](https://cn.bing.com/)点击<ins>查看仪表板</ins>
+>浏览器登录 [https://cn.bing.com/](https://cn.bing.com/) 点击 <ins>查看仪表板</ins>
 
 >抓取包含`tifacfaatcs`和`.MSA.Auth`字段的Cookie
 
