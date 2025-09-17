@@ -36,7 +36,7 @@ BARK_GROUP = CUSTOM_BARK_GROUP or os.getenv("BARK_GROUP", "")
 # 覆盖环境变量，让 notify.py 能读到
 os.environ["BARK_ICON"] = BARK_ICON
 os.environ["BARK_GROUP"] = BARK_GROUP
-os.environ["TC_PUSH"] = TC_PUSH
+os.environ["PUSH_SWITCH"] = PUSH_SWITCH
 
 # =====================================================
 
