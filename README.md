@@ -1,18 +1,21 @@
 ## 🔗 拉库地址
 
 ```
-ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
+ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup"
 ```
 
-拉取的文件后缀名：`js sh py`
+拉取的文件后缀名：`js sh py mjs json`
 
 > 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行[部署教程参考①](https://blog.csdn.net/a18065597272/article/details/132633015)  [②](https://blog.csdn.net/a18065597272/article/details/129752658?ops_request_misc=&request_id=&biz_id=102&utm_term=%E9%9D%92%E9%BE%99%E9%9D%A2%E6%9D%BF2.15%E6%81%A2%E5%A4%8D%E5%8C%85&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-3-129752658.142^v102^pc_search_result_base5&spm=1018.2226.3001.4187)
 ---
+
 ## 📝 脚本说明
 
 ### 🌐 自动更新YDNS动态域名
 
 - `ydns_update.sh` &emsp;环境变量：`YDNS_CONFIG`
+
+>[注册域名](https://ydns.io/)
 
 >支持IPv4/IPv6地址解析，添加IP变动检测避免过度请求
 
@@ -23,25 +26,23 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 - `EpicGamesNotify.js`
 
-支持Bark推送
-
->点击bark通知即可跳转领取页面
+>支持Bark推送，点击bark通知即可跳转领取页面
 
 
 ### ☁️ 移动云盘签到
 
-- `mcloud.py` &emsp;环境变量：`ydypCK`
+- `caiyun.ql.mjs` &emsp;配置文件：`asign.json`
 
->浏览器登录 [https://yun.139.com/w/#/index](https://yun.139.com/w/#/index) 抓取cookie
+>浏览器登录 [https://yun.139.com/](https://yun.139.com/)
 
->CK格式：`Authorization#手机号#00` `@`
+>抓取cookie中的Authorization写入配置文件
 
 
 ### 🏅 Microsoft Rewards 自动积分
 
 - `Microsoft_Rewards_v2.1.py` &emsp;环境变量：`bing_ck_1`
 
->浏览器登录 [https://cn.bing.com/](https://cn.bing.com/) 点击 <ins>查看仪表板</ins>
+>浏览器登录 [https://cn.bing.com/](https://cn.bing.com/) -> 右上角的积分 -> 查看仪表板
 
 >抓取包含`tifacfaatcs`和`.MSA.Auth`字段的Cookie
 
@@ -50,11 +51,11 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 ### 📦️ 顺丰速运每日任务
 
-- `SFExpress.py` &emsp;环境变量：`sfsy_url`
+- `SFExpress.py` &emsp;环境变量：`SFSY`
 
->手机开启抓包软件，进入微信->小程序->我的->积分
+>手机开启抓包软件，进入微信 -> 小程序 -> 我的 -> 积分
 
->搜索 https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/activityRedirect?source= 的请求链接
+>搜索 `https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/activityRedirect?source=` 的请求链接
 
 >CK格式：`整段url` `@`
 
@@ -63,20 +64,18 @@ ql repo https://github.com/hlt1995/qlScripts.git "" "Backup"
 
 - `TongchengTravel.py` &emsp;环境变量：`tc_cookie`
 
->手机开启抓包软件，进入同程旅行->领福利->点击签到
+>手机开启抓包软件，进入同程旅行 -> 领福利 -> 点击签到
 
->搜索 https://app.17u.cn/welfarecenter/index/signIndex 的请求头，找到`appToken` `device`
+>搜索 `https://app.17u.cn/welfarecenter/index/signIndex` 的请求头，找到`appToken` `device`
 
 >CK格式：`手机号#appToken#device` `@`
 
 
 ---
 
-## 🗒️ 青龙面板升级和依赖安装
+## 🗒️ 青龙面板升级以及依赖安装
 
-恢复包解压完成并切换容器后，输入`startalpine`进入Alpine
-
-执行
+恢复包解压完成切换容器后，输入`startalpine`进入Alpine，执行
 ```
 cd /ql
 ql update
@@ -90,7 +89,7 @@ pnpm add axios jsdom ds moment sharp@0.32.0
 
 执行安装Python3依赖
 ```
-pip3 install requests
+pip3 install requests httpx
 ```
 ---
 
@@ -113,13 +112,13 @@ cp -f /sdcard/sendNotify.js /ql/data/deps/sendNotify.js
 ```
 nano ~/.bashrc
 ```
-在文件中加入以下命令并保存
+在文件中加入以下命令
 
 ```
 startalpine
 ```
 
-输入`startalpine`进入Alpine，建议安装nano编辑器
+进入Alpine，首先安装nano编辑器
 
 ```
 apk update
@@ -131,9 +130,9 @@ apk add nano
 nano ~/.profile
 ```
 
-在文件中加入以下命令并保存
+在文件中加入以下逻辑
 ```
-# 青龙面板自启动
+# 青龙面板自启动逻辑
 if pgrep -f "app.js" > /dev/null 2>&1; then
   echo -e "\033[1;32m✔ [QL-PANEL] 青龙面板正在运行\033[0m
 "
