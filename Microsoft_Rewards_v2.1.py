@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# cron: 1 7 * * *
+# cron: 1 7-20 * * *
 # const $ = new Env("微软积分");
 """
 🎯 Bing Rewards 自动化脚本 - 多账号分离版-v2.1
