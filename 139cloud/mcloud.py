@@ -1,15 +1,18 @@
-# 脚本名称: [中国移动云盘]
+# 脚本名称: [移动云盘]
 # 功能描述: [签到 基础任务 果园 云朵大作战]
 # 使用说明:
 #   - [抓包 Cookie：任意Authorization]
 #   - [注意事项: Authorization复制不要带Basic]
 # 环境变量设置:
 #   - 从asign.json中获取auth信息
-# 定时设置: [0 0 8,16,20 * * *]
+
 # 更新日志:
 #   - [1.31]: [从asign.json获取账号信息和BARK_Key，精简推送内容]
 # 注: 本脚本仅用于个人学习和交流，请勿用于非法用途。作者不承担由于滥用此脚本所引起的任何责任，请在下载后24小时内删除。
-# new Env("移动云盘")
+
+# cron: 5 12 * * *
+# const $ = new Env('移动云盘')
+
 import os
 import random
 import re
