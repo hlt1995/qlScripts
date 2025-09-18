@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# cron: 1 7 * * 7
+# cron: 1 7 * * *
 # const $ = new Env("微软积分");
 """
 🎯 Bing Rewards 自动化脚本 - 多账号分离版-v2.1
@@ -80,8 +80,8 @@ os.environ["BARK_GROUP"] = BARK_GROUP
 # 任务执行配置
 TASK_CONFIG = {
     'SEARCH_CHECK_INTERVAL': 5,      # 搜索检查间隔次数
-    'SEARCH_DELAY_MIN': 25,          # 搜索延迟最小值（秒）
-    'SEARCH_DELAY_MAX': 35,          # 搜索延迟最大值（秒）
+    'SEARCH_DELAY_MIN': 60,          # 搜索延迟最小值（秒）
+    'SEARCH_DELAY_MAX': 80,          # 搜索延迟最大值（秒）
     'TASK_DELAY_MIN': 2,             # 任务延迟最小值（秒）
     'TASK_DELAY_MAX': 4,             # 任务延迟最大值（秒）
     'MAX_RETRIES': 3,                # 最大重试次数
