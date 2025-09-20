@@ -51,7 +51,7 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup"
 
 ### 📦️ 顺丰速运每日任务
 
-- `SFExpress.py` &emsp;环境变量：`SFSY`
+- `SFExpress.py` &emsp;环境变量：`sfsyUrl`
 
 >手机开启抓包软件，进入微信 -> 小程序 -> 我的 -> 积分
 
