@@ -57,7 +57,7 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup"
 
 >搜索 `https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/activityRedirect?source=` 的请求链接
 
->CK格式：`整段url` `@`
+>CK格式：`编码后的url` `@`
 
 
 ### ✈️ 同程旅行每日签到
