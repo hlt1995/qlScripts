@@ -27,7 +27,7 @@ BARK_PUSH = os.getenv("BARK_PUSH")
 # 你可以在这里写死参数，也可以留空
 CUSTOM_BARK_ICON = "https://bkimg.cdn.bcebos.com/smart/80cb39dbb6fd5266d016318a204d802bd40734fa98aa-bkimg-process,v_1,rw_1,rh_1,pad_1,color_ffffff?x-bce-process=image/format,f_auto"   # 自定义图标
 CUSTOM_BARK_GROUP = "同程旅行"              # 自定义分组
-PUSH_SWITCH = "1"    #推送开关，1开启，0关闭
+PUSH_SWITCH = "0"    #推送开关，1开启，0关闭
 
 # 定义全局变量，保证不会报未定义错误
 BARK_ICON = CUSTOM_BARK_ICON or os.getenv("BARK_ICON", "")
