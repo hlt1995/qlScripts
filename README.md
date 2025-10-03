@@ -71,7 +71,17 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup"
 >CK格式：`手机号#appToken#device` `@`
 
 
+### 👛 小米钱包
+
+- `XiaomiWallet.py` &emsp;环境变量：`xmqb`
+
+>浏览器登录 [https://account.xiaomi.com/](https://account.xiaomi.com/) ,抓取cookie中的`passToken` `userId`
+
+>CK格式：`passToken&userId` `@`
+
+
 ---
+
 
 ## 🗒️ 青龙面板升级以及依赖安装
 
