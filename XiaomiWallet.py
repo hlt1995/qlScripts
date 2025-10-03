@@ -1,5 +1,5 @@
-# cron: 0 12,20 * * *
-# const $ = new Env("小米钱包1");
+# cron: 0 12 * * *
+# const $ = new Env("小米钱包");
 '''
 完成每天2次领取视频时长任务，有推送
 格式为passToken&userId
