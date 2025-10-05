@@ -1,5 +1,6 @@
-#百度搜索小米账号，抓包即可
-#每天两个视频任务，CK在脚本里配置，无推送
+#每天两个视频任务，无推送
+#环境变量=xmqb，格式为passToken&userId
+#在浏览器输入https://account.xiaomi.com/登入
 import os
 import time
 import requests
