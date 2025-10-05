@@ -1,6 +1,10 @@
+# cron: 0 12 * * *
+# const $ = new Env("小米钱包无推送");
+
 #每天两个视频任务，无推送
 #环境变量=xmqb，格式为passToken&userId
 #在浏览器输入https://account.xiaomi.com/登入
+
 import os
 import time
 import requests
@@ -9,6 +13,24 @@ from datetime import datetime
 from typing import Optional, Dict, Any, Union
 #import sendNotify
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+def get_ck_from_env():
+    """
+    从环境变量 xmqb 中读取账号信息
+    格式: passToken1&userId1@passToken2&userId2@...
+    返回: [{'passToken': xxx, 'userId': xxx}, ...]
+    """
+    ck_str = os.environ.get("xmqb", "")
+    accounts = []
+    if ck_str:
+        for item in ck_str.split("@"):
+            try:
+                passToken, userId = item.split("&")
+                accounts.append({'passToken': passToken.strip(), 'userId': userId.strip()})
+            except:
+                print(f"[Warning] 无法解析CK: {item}")
+    return accounts
+
 
 class RnlRequest:
     def __init__(self, cookies: Union[str, dict]):
@@ -308,19 +330,11 @@ def generate_notification(account_id, rnl_instance):
 
 
 if __name__ == "__main__":
-    # 多账号配置区 ##################################
-    ORIGINAL_COOKIES = [
-        {   # 账号1
-            'passToken': 'V1:DXmurwq2/R1BHTELu6obCU+oPGdHuAEuFerP3TbZPC27oxbVAcHIVYA3ullr3vdxL1nl8eDwy/w9t1oxcyqzlcoOmx/ciFdYfzyGtuH7mNOYWKusdMMANdzd9fHqwaaV8t8E9E8c/tq4quFNgWNmgaEpvoCEFxTnV3udIxnS9CRFSnYw+JIPaqP058DQTz/SAyB74wsBuuvngE3rGC6PA5xDEACTyQ7gNg93eQp3myfDwXmPQlRITbJUYKuNRjBbzVrlzmx8DxFyDgP6N1pz7voCsIIBiwz0YYcEHZr6TaPkyxPRmsCd5RtVkhBFY4m6dUM6zvyNeM+rdOHENSuuxQ==&2519635652@V1:DXmurwq2/R1BHTELu6obCaBLs8Oytbq9ks7HPRiFyyF/z7npTXman/pU5GMbjNSGmDIki9/zaG/haQGpMRqjd3oYbeYXBzj8VZn4btojELkCbjPds1RZcCcHOE6MKUBURRwGkkDNSp/TnLmmPyWSinTVyes/9BZDcISjpfNDZxxLljssmS5+OF4ZLUsote3fcvy4s92NdoBNFkE16ImkeFtikcRp5clmrOxqVmSIG7LKYpm+odWOnKQNSt2uVKW0mu+O2KhU7+hc4UDC+e/I0PJzSnhNGirReL7zzEXMo9onYisc62tsIV/UpYOXrZkJTEZENvf/1mkUMZUrzdyc7A==&3122031873@V1:J7rrshrufaw8uWrlTMO7x/AZ8GjaEBP0htgXLIxCAmsRwWFRStUteK0i9Us+7MdLT5Xcn8I+IiOe5yGPSZ0ij+SM+ByN230zNWbFaiYzolxEMbTxaLAYm5dmUmZXUKoJwQLfbSFsTlfY15IULDjVvG5vt9qlJo8Ni3BcNTSSu05hRU2kxzHX+xcnkAXzuAlAbBARXIAvljZ1E537y9Bxmgh9gKlGTL4SUgPH8pLgnfVvQkz3DxQ9JUQMHnXFvw7mN57l22mbhFaODIQfpu5Z7XwzXbdSJT7o7ZQzzjRt+n5ulk9rcKjTfobTgTNybj50XNrp3iBW9vqW2I4VCgPElg==&3122284306@V1:DXmurwq2/R1BHTELu6obCVZR7+t3vIjlUxQwjmyVhgZN/xgTVFHQ7zwub4tyGz2FC7cmu7W/d1ZbReM2aWN5701KtHCCf3gyV4dlmOrH774zK0qOwf7+BLu9nn8RzEuCpI94sLG2VHr388I0chPZ5TtlYpZkiaaqVo8xhX1M2qGrZzdPOdHJx3Tdhm/Q6qRPrzZDycadKtxzEa6aLpaeaXFB5RLeZ5zxUWobWOg64A61qriGHHFbv7lWT/i8hDzCteEtKmmbw0wJ0PpC1h8UmlxWtCfimadyD3nACMUCuTApuveaMnHnmia8nwkxmaH5aEDn7prxriQAaPZUX+p+6w==&3079231332@V1:J7rrshrufaw8uWrlTMO7x9wJTeTR3BIsuZuGQreKMj8EjIgrpBMGEe6h5/9W70eaYITiZm8lMfkdj4J1H/vqCiQHW4h7SBh3BoXw8mnCpxEZWufhhOaSiI0s0XhyH9ovvnfPwcGq2FbX71rii6+CuWVqojuEeiPm46poGXOHMHqHK1DLWsYYSlOa7ofrIPH73ydj8i9S28ZdK912ZM8uN2nZEwEEULkIZQ3W6eaOO8b7Kv7+7k9715gn3PEYbO0U+LcgcIBL+8LNYowiDn/c4WsYcJ2h5VIGIb4DhItXlyldrwlkjvtbKlZxmNUIjAiHt6i/Nqp9Z77FnyJgx7YzNA==&3122289860@V1:DXmurwq2/R1BHTELu6obCXQhX+fdTG4gXC+ATBK3b0jKYJ2Xu1DOHYFUoqb69IHl1LRS3kbSTNXRpLzOYni0traef5m2JeM5nm2bjs6d6mQWSeZWIPgl2gumpwtnrGvMnjcUM0a0fOTUntUk2anjfQiLJ5WedYxdYMiNPbWc6YH7R4I8bVSfexOMfzu31vrfsoNFR9e5oCfLqJcNbcLQ9d5rBUsUU/NpAspo+OG37YQYJrffPlufqunzikFIKYGpiZcQr5wPAdadxJqo8w5hPzjnY5FFqWQU5z6ZioKlrFRy9eXEB1UYCf3B9Pjcn35TCZ3DmqtNEq0YiL1O/1hMQQ==&3122028739@V1:DXmurwq2/R1BHTELu6obCTjVwvk2Rvnl//0UKyyahGfEai0LjQmn73TZhymxkR5c4RorZBo1Z2TNWIEBVmakhrIlLRbwT0yVn4ALqZSrgieoYeAUqOUyi4atCZy20ai+oBBV1x8GGLbm7bnPdSDDkEJLyf54whp55YQ8FMjaUL6zAFLSV+3ucxT2xD+mHJNQweF4GJYVwmRRUZLqn+FmfxJ/pr3EGylmLODJw7rlmQCjsj/dterOXFRcgmaKjO4u/0i1ssiith02Mc0sWpbnEH12WvdqM8XE6Agmu0e6RgMznL3uOsy/B/rRuPPbb/gPkg5qGvcXkPrWFfRWl/ubjA==&3123159026@V1:DXmurwq2/R1BHTELu6obCfGbZlm9b5wzMOkKbtT6Mf3mPvumbV9F9+mUt98LyARP4tmVvJo1ZxqnZFoCBC9YFT/khJ8popqgR7Hymxnl9emk+3TC23kbsdU4tJ814k76naWrR6LMef5B+CgRaIXLq/FB4hr4lHy5w2idvjFtkp1el8cWDAd/pEK/suRKPUIWIpfBtHeWSLfpMP08OpebpYpGdzN+5NpC3eb2YTUcGVQQcpuWOkNVqi+R5GcbnZlraiWsQF7A/2lHhOllQc+kAYmuR9TmSQD/CLjTDPOBW0ZXMTxS8iGJh/e63Zr8Yb4x4N2+jhH3DsWMdUmp3FGLdQ==&3123161307@V1:J7rrshrufaw8uWrlTMO7xyT5/vs6S9QEfVBwg47rqprJDvhhTz9MrjFrI5CwH05qGDjoMox8BNqyqPedA4/bZsZeiQd6prnUHzs7qozDQM1ZVGHlnIIWVL0cyEbs5tkdXsV7x8mrBk7DQUbDwnwKbinDToeZNaKLm93XWqjsEV4tWwT/G47+ztOTrYUI0IHQVT/KSmknG5stIUwaNHgdcgq4DtuF8tZxz/0odmu4sha4FwXd9mvvlx+1t4qUKzsEXj7HrEF5TybvpSdWgmjoArnjgjuOiNGNesqcDn+8h9D6aMsiNpwWHHMuvVrTFzTADERk/qCKXvVx6Xs4JO/Mlg==&3123859427@V1:J7rrshrufaw8uWrlTMO7x6qWqKBu9yogajQW4FCZn9rSECg+iPwixPPn1uCOPj2LUdkA53iT92edGHlCDEJFup2fMJ5STdTLslOj5EabJXJSQ4X7dWcLFIe9tnD/Eh1AgqqmYWoIlxR6+trJIsEWoDwncJazSeq0e6o8NHpaLiSTzsMJNmrI0EFwEOEQ+9bDxx4JetyXvH1wRM8v8XqqXngIec68fKiHAhcJ0V6IfvppOTvYDteu5BhU/EoUMcD9rPER6XFfHX/Cx/2hnpzJpogAiNWPe5DUDn3Lom8M8nccaG0yHlUR96wKvzw5Uog42moX03niSuAZq48RDin18g==',
-            'userId': '3123860248'
-        },
-        {   # 账号2
-            'passToken': '1',
-            'userId': '1'
-        }
-        # 可继续添加更多账号...
-    ]
-    # 结束配置 ######################################
+    
+    ORIGINAL_COOKIES = get_ck_from_env()
+    if not ORIGINAL_COOKIES:
+        print("❌ 未获取到账号CK，请检查青龙环境变量 xmqb 是否配置正确！")
+        exit()
 
     # 构建完整通知消息
     full_notification = "📺【小米钱包任务执行结果】\n"
@@ -372,4 +386,4 @@ if __name__ == "__main__":
     print(full_notification)
 
     # 此处可添加实际的消息推送代码
-    sendNotify.send("小米钱包任务推送",full_notification)        
+    sendNotify.send("小米钱包任务推送",full_notification)       
