@@ -1,9 +1,9 @@
 # cron: 0 12 * * *
-# const $ = new Env("小米钱包无推送");
+# const $ = new Env("小米钱包");
 
-#每天两个视频任务，无推送
-#环境变量=xmqb，格式为passToken&userId
-#在浏览器输入https://account.xiaomi.com/登入
+#每天两次视频任务
+#环境变量 xmqb ，格式为passToken&userId，多账号用@隔开
+#浏览器打开https://account.xiaomi.com/ 登陆
 
 import os
 import time
@@ -11,15 +11,32 @@ import requests
 import urllib3
 from datetime import datetime
 from typing import Optional, Dict, Any, Union
-#import sendNotify
+
+# ==================== Bark 推送配置 ====================
+# Bark 推送地址（环境变量读取）
+BARK_PUSH = os.getenv("BARK_PUSH")
+
+# 可以自定义参数，也可以留空
+CUSTOM_BARK_ICON = "https://tse3.mm.bing.net/th/id/OIP.g9y0Cv6ym9ZAI0USSlNxMwAAAA?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"   # 自定义图标
+CUSTOM_BARK_GROUP = "小米钱包"              # 自定义分组
+PUSH_SWITCH = "1"    #推送开关，1开启，0关闭
+
+# 定义全局变量
+BARK_ICON = CUSTOM_BARK_ICON or os.getenv("BARK_ICON", "")
+BARK_GROUP = CUSTOM_BARK_GROUP or os.getenv("BARK_GROUP", "")
+
+# 覆盖环境变量
+os.environ["BARK_ICON"] = BARK_ICON
+os.environ["BARK_GROUP"] = BARK_GROUP
+os.environ["PUSH_SWITCH"] = PUSH_SWITCH
+
+# =====================================================
+
+import notify
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+
 def get_ck_from_env():
-    """
-    从环境变量 xmqb 中读取账号信息
-    格式: passToken1&userId1@passToken2&userId2@...
-    返回: [{'passToken': xxx, 'userId': xxx}, ...]
-    """
     ck_str = os.environ.get("xmqb", "")
     accounts = []
     if ck_str:
@@ -301,30 +318,14 @@ def get_xiaomi_cookies(pass_token, user_id):
 
 
 def generate_notification(account_id, rnl_instance):
-    """生成格式化的通知消息"""
-    current_date = datetime.now().strftime("%Y-%m-%d")
+    """生成简化的通知消息"""
+    # 计算今日获得的总天数
+    today_total = sum(int(record["value"]) for record in rnl_instance.today_records) / 100
     
     msg = f"""
-【账号信息】
-✨ 账号ID：{account_id}
+📱 账号ID：{account_id}
 📊 当前兑换视频天数：{rnl_instance.total_days}
-
-📅 {current_date} 任务记录
-{"-"*40}"""
-    
-    for record in rnl_instance.today_records:
-        record_time = record["createTime"]
-        days = int(record["value"]) / 100
-        msg += f"""
-⏰ {record_time}
-🎁 领到视频会员，+{days:.2f}天"""
-    
-    if rnl_instance.error_info:
-        msg += f"""
-⚠️ 执行异常：{rnl_instance.error_info}"""
-    
-    msg += f"""
-{"="*40}"""
+🎁 今日获得：+{today_total:.2f}天"""
     
     return msg
 
@@ -336,15 +337,15 @@ if __name__ == "__main__":
         print("❌ 未获取到账号CK，请检查青龙环境变量 xmqb 是否配置正确！")
         exit()
 
-    # 构建完整通知消息
-    full_notification = "📺【小米钱包任务执行结果】\n"
+    # 构建简化通知消息
+    simplified_notification = "📺【小米钱包任务执行结果】\n"
     
     cookie_list = []
     for account in ORIGINAL_COOKIES:
         user_id = account['userId']
         print(f"\n>>>>>>>>>> 正在处理账号 {user_id} <<<<<<<<<<")
         
-        # 获取Cookie - 兼容原函数返回值
+        # 获取Cookie
         cookie_result = get_xiaomi_cookies(account['passToken'], user_id)
         
         # 处理返回结果
@@ -371,19 +372,12 @@ if __name__ == "__main__":
                 rnl.error_info = f"执行异常: {str(e)}"
                 print(rnl.error_info)
         
-        # 生成当前账号的通知消息并添加到完整通知中
+        # 生成当前账号的简化通知消息
         account_notification = generate_notification(user_id, rnl)
-        full_notification += account_notification
+        simplified_notification += account_notification + "\n"
 
-    # 添加汇总信息
-    full_notification += f"""
-📊 执行汇总：
-✅ 成功账号数：{len(cookie_list)}
-⚠️ 失败账号数：{len(ORIGINAL_COOKIES) - len(cookie_list)}
-"""
-
-    # 打印最终通知消息
-    print(full_notification)
-
-    # 此处可添加实际的消息推送代码
-    sendNotify.send("小米钱包任务推送",full_notification)       
+    # 判断是否推送
+    if PUSH_SWITCH == '1':
+        notify.send("小米钱包任务推送", simplified_notification)
+    else:
+        print("推送开关已关闭，不发送推送通知")
