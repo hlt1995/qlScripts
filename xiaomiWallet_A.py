@@ -17,7 +17,7 @@ from typing import Optional, Dict, Any, Union
 BARK_PUSH = os.getenv("BARK_PUSH")
 
 # 可以自定义参数，也可以留空
-CUSTOM_BARK_ICON = "https://tse3.mm.bing.net/th/id/OIP.g9y0Cv6ym9ZAI0USSlNxMwAAAA?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"   # 自定义图标
+CUSTOM_BARK_ICON = "https://gitee.com/hlt1995/ICON/raw/master/XiaomiWallet.png"   # 自定义图标
 CUSTOM_BARK_GROUP = "小米钱包"              # 自定义分组
 PUSH_SWITCH = "1"    #推送开关，1开启，0关闭
 
