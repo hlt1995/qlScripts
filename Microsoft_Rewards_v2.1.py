@@ -49,7 +49,7 @@ import traceback
 BARK_PUSH = os.getenv("BARK_PUSH")
 
 # Bark 推送图标和推送分组（不填则读取配置文件）
-CUSTOM_BARK_ICON = "https://rewards.bing.com/rewardscdn/images/rewards.png"   # 自定义图标
+CUSTOM_BARK_ICON = "https://gitee.com/hlt1995/ICON/raw/master/MicrosoftRewards.png"   # 自定义图标
 CUSTOM_BARK_GROUP = "Microsoft Rewards"              # 自定义分组
 
 # 定义全局变量
