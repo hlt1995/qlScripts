@@ -6,7 +6,7 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup"
 
 拉取的文件后缀名：`js sh py mjs json`
 
-> 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行[教程及恢复包下载](https://cloud.189.cn/web/share?code=U36RferiMvIf（访问码：2io3）)
+> 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行[教程及资源下载](https://cloud.189.cn/web/share?code=U36RferiMvIf（访问码：2io3）)
 ---
 
 ## 📝 脚本说明
