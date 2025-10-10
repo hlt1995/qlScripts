@@ -144,13 +144,11 @@ nano ~/.profile
 ```
 # 青龙面板自启动逻辑
 if pgrep -f "app.js" > /dev/null 2>&1; then
-  echo -e "\033[1;32m✔ [QL-PANEL] 青龙面板正在运行\033[0m
-"
+  echo -e "\033[1;32m✔ [QL-PANEL] 青龙面板正在运行\033[0m"
 else
   echo -e "\033[1;33m⚡ [QL-PANEL] 青龙面板未运行，正在启动...\033[0m"
   qinglong
 fi
-
 ```
 
 ---
