@@ -25,7 +25,7 @@ import httpx
 BARK_PUSH = os.getenv("BARK_PUSH")
 
 # 你可以在这里写死参数，也可以留空
-CUSTOM_BARK_ICON = "https://gitee.com/hlt1995/ICON/raw/master/TongchengTravel.png"   # 自定义图标
+CUSTOM_BARK_ICON = "https://gitee.com/hlt1995/BARK_ICON/raw/main/TongchengTravel.png"   # 自定义图标
 CUSTOM_BARK_GROUP = "同程旅行"              # 自定义分组
 PUSH_SWITCH = "0"    #推送开关，1开启，0关闭
 
