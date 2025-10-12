@@ -21,24 +21,19 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from urllib.parse import unquote
 
 # ==================== Bark 推送配置 ====================
-# Bark 推送地址（环境变量读取）
-BARK_PUSH = os.getenv("BARK_PUSH")
-
-# 可以自定义参数，也可以留空
+# 添加自定义参数，也可以留空
 CUSTOM_BARK_ICON = "https://gitee.com/hlt1995/BARK_ICON/raw/main/SFExpress.png"   # 自定义图标
 CUSTOM_BARK_GROUP = "顺丰速运"              # 自定义分组
-PUSH_SWITCH = "1"    #推送开关，1开启，0关闭
+PUSH_SWITCH = "1"                #推送开关，1开启，0关闭
+# =======================================================
 
-# 定义全局变量
+BARK_PUSH = os.getenv("BARK_PUSH")
 BARK_ICON = CUSTOM_BARK_ICON or os.getenv("BARK_ICON", "")
 BARK_GROUP = CUSTOM_BARK_GROUP or os.getenv("BARK_GROUP", "")
 
-# 覆盖环境变量
 os.environ["BARK_ICON"] = BARK_ICON
 os.environ["BARK_GROUP"] = BARK_GROUP
 os.environ["PUSH_SWITCH"] = PUSH_SWITCH
-
-# =====================================================
 
 # 禁用安全请求警告
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
