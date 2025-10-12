@@ -349,7 +349,7 @@ if __name__ == "__main__":
         exit()
 
     # 构建简化通知消息
-    simplified_notification = "📺【小米钱包任务执行结果】\n"
+    simplified_notification = ""
     
     cookie_list = []
     for account in ORIGINAL_COOKIES:
@@ -390,6 +390,6 @@ if __name__ == "__main__":
 
     # 判断是否推送
     if PUSH_SWITCH == '1':
-        notify.send("小米钱包任务推送", simplified_notification)
+        notify.send("小米钱包签到结果", simplified_notification)
     else:
         print("推送开关已关闭，不发送推送通知")
