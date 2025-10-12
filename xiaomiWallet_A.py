@@ -390,6 +390,6 @@ if __name__ == "__main__":
 
     # 判断是否推送
     if PUSH_SWITCH == '1':
-        notify.send("小米钱包签到结果", simplified_notification)
+        notify.send("👛 小米钱包签到结果", simplified_notification)
     else:
         print("推送开关已关闭，不发送推送通知")
