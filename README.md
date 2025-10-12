@@ -73,11 +73,11 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup"
 
 ### 👛 小米钱包
 
-- `XiaomiWallet_A/B.py` &emsp;环境变量：`xmqb`
+- `XiaomiWallet_A.py` &emsp;环境变量：`xmqb`
 
 >浏览器登录 [https://account.xiaomi.com/](https://account.xiaomi.com/) ,抓取cookie中的`passToken` `userId`
 
->CK格式：`passToken&userId` `@`
+>CK格式：`备注名&passToken&userId` `@`
 
 
 ---
