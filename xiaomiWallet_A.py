@@ -2,7 +2,7 @@
 # const $ = new Env("小米钱包");
 
 #每天两次视频任务
-#环境变量 xmqb ，格式为passToken&userId，多账号用@隔开
+#环境变量 xmqb ，格式为：备注名&passToken&userId，多账号用@隔开
 #浏览器打开https://account.xiaomi.com/ 登陆
 
 import os
@@ -13,24 +13,19 @@ from datetime import datetime
 from typing import Optional, Dict, Any, Union
 
 # ==================== Bark 推送配置 ====================
-# Bark 推送地址（环境变量读取）
-BARK_PUSH = os.getenv("BARK_PUSH")
-
-# 可以自定义参数，也可以留空
+# 添加自定义参数，也可以留空
 CUSTOM_BARK_ICON = "https://gitee.com/hlt1995/BARK_ICON/raw/main/XiaomiWallet.png"   # 自定义图标
 CUSTOM_BARK_GROUP = "小米钱包"              # 自定义分组
-PUSH_SWITCH = "1"    #推送开关，1开启，0关闭
+PUSH_SWITCH = "1"                #推送开关，1开启，0关闭
+# =======================================================
 
-# 定义全局变量
+BARK_PUSH = os.getenv("BARK_PUSH")
 BARK_ICON = CUSTOM_BARK_ICON or os.getenv("BARK_ICON", "")
 BARK_GROUP = CUSTOM_BARK_GROUP or os.getenv("BARK_GROUP", "")
 
-# 覆盖环境变量
 os.environ["BARK_ICON"] = BARK_ICON
 os.environ["BARK_GROUP"] = BARK_GROUP
 os.environ["PUSH_SWITCH"] = PUSH_SWITCH
-
-# =====================================================
 
 import notify
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -42,10 +37,26 @@ def get_ck_from_env():
     if ck_str:
         for item in ck_str.split("@"):
             try:
-                passToken, userId = item.split("&")
-                accounts.append({'passToken': passToken.strip(), 'userId': userId.strip()})
-            except:
-                print(f"[Warning] 无法解析CK: {item}")
+                parts = item.split("&")
+                if len(parts) == 2:
+                    passToken, userId = parts
+                    display_name = userId  # 使用userId作为显示名
+                    accounts.append({
+                        'display_name': display_name.strip(),
+                        'passToken': passToken.strip(), 
+                        'userId': userId.strip()
+                    })
+                elif len(parts) == 3:
+                    display_name, passToken, userId = parts
+                    accounts.append({
+                        'display_name': display_name.strip(),
+                        'passToken': passToken.strip(), 
+                        'userId': userId.strip()
+                    })
+                else:
+                    print(f"[Warning] 无法解析CK格式: {item}")
+            except Exception as e:
+                print(f"[Warning] 解析CK时出错: {item}, 错误: {e}")
     return accounts
 
 
@@ -138,7 +149,7 @@ class RNL:
         }
         self.activity_code = '2211-videoWelfare'
         self.rr = RnlRequest(c)
-        self.current_user_id = None  # 存储当前处理的用户ID
+        self.current_display_name = None  # 存储当前处理的账号显示名
         self.total_days = "未知"
         self.today_records = []
         self.error_info = ""
@@ -317,13 +328,13 @@ def get_xiaomi_cookies(pass_token, user_id):
         return None, error_msg
 
 
-def generate_notification(account_id, rnl_instance):
+def generate_notification(display_name, rnl_instance):
     """生成简化的通知消息"""
     # 计算今日获得的总天数
     today_total = sum(int(record["value"]) for record in rnl_instance.today_records) / 100
     
     msg = f"""
-📱 账号ID：{account_id}
+📱 账号ID：{display_name}
 📊 当前兑换视频天数：{rnl_instance.total_days}
 🎁 今日获得：+{today_total:.2f}天"""
     
@@ -342,8 +353,9 @@ if __name__ == "__main__":
     
     cookie_list = []
     for account in ORIGINAL_COOKIES:
+        display_name = account['display_name']
         user_id = account['userId']
-        print(f"\n>>>>>>>>>> 正在处理账号 {user_id} <<<<<<<<<<")
+        print(f"\n>>>>>>>>>> 正在处理账号 {display_name} <<<<<<<<<<")
         
         # 获取Cookie
         cookie_result = get_xiaomi_cookies(account['passToken'], user_id)
@@ -355,14 +367,14 @@ if __name__ == "__main__":
             new_cookie = cookie_result
             error = None
         
-        # 创建RNL实例并设置当前用户ID
+        # 创建RNL实例并设置当前显示名
         rnl = RNL(new_cookie)
-        rnl.current_user_id = user_id
+        rnl.current_display_name = display_name
         
         if error:
             rnl.error_info = error
         else:
-            print(f"账号 {user_id} Cookie获取成功")
+            print(f"账号 {display_name} Cookie获取成功")
             cookie_list.append(new_cookie)
             
             # 执行主程序
@@ -373,7 +385,7 @@ if __name__ == "__main__":
                 print(rnl.error_info)
         
         # 生成当前账号的简化通知消息
-        account_notification = generate_notification(user_id, rnl)
+        account_notification = generate_notification(display_name, rnl)
         simplified_notification += account_notification + "\n"
 
     # 判断是否推送
