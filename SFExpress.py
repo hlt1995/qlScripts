@@ -680,7 +680,7 @@ def send_notification():
         return
         
     # 构建推送内容
-    title = "🚚 顺丰速运签到结果"
+    title = "🚚 顺丰速运签到结果\n"
     content = "\n\n".join(push_messages)
     
     print("\n" + "="*50)
