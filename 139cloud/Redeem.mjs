@@ -2,15 +2,23 @@ import { loadConfig, useExchange } from "./caiyun-1.0.0-alpha.7.mjs";
 
 const { config, message } = await loadConfig();
 
-// 定时任务设定为兑换时间点前2分钟
+const configRaw = process.env.REDEEM_CONFIG;
+const configLines = configRaw.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
 
-// =================== 配置参数 ===================
-const ACCOUNT_INDEX = 0;           // 兑换账号索引（0表示第一个账号）
-const TARGET_HOUR = 16;            // 兑换时间点（可选12/16/24）
-const EXCHANGE_IDS = [241229017];  // 兑换奖品ID
-// ================================================
+const configMap = {};
+for (const line of configLines) {
+  const [key, value] = line.split("=");
+  if (key && value !== undefined) configMap[key.trim()] = value.trim();
+}
 
-// 使用配置中的指定账号
+const ACCOUNT_INDEX = parseInt(configMap.ACCOUNT_INDEX, 10);
+const TARGET_HOUR = parseInt(configMap.TARGET_HOUR, 10);
+const EXCHANGE_IDS = configMap.EXCHANGE_IDS
+  .split(/[,&]/)
+  .map(id => parseInt(id.trim()))
+  .filter(id => !isNaN(id));
+
+// 指定账号
 const { exchange, exchangeQuickly, sendMessage } = await useExchange(
   config[ACCOUNT_INDEX],
   message
@@ -41,14 +49,14 @@ const waitToTargetHour = (targetHour = 24) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-// 兑换的时间点
+// 兑换时间
 await waitToTargetHour(TARGET_HOUR);
 
-// 兑换的奖品ID
-await exchange(EXCHANGE_IDS);
+// 兑换奖品
+// await exchange(EXCHANGE_IDS);
 
-// 快速兑换,如果需要自定义逻辑，可以使用这个 api，在兑换前不会有校验
-// await exchangeQuickly(EXCHANGE_IDS, '奖品');
+// 快速兑换
+await exchangeQuickly(EXCHANGE_IDS, '奖品');
 
 // 发送推送
 await sendMessage();
