@@ -13,7 +13,7 @@ CONFIG="${YDNS_CONFIG:-}"
 
 if [ -z "$CONFIG" ]; then
     echo "❌ 缺少环境变量 YDNS_CONFIG，格式应为：域名|用户名|密码|记录类型(A/AAAA/A&AAAA)"
-    exit 1
+    kill $$
 fi
 
 # 分割配置
@@ -24,7 +24,7 @@ IP_TYPE=$(echo "$CONFIG" | cut -d '|' -f4)
 
 if [ -z "$YDNS_HOST" ] || [ -z "$YDNS_USER" ] || [ -z "$YDNS_PASS" ] || [ -z "$IP_TYPE" ]; then
     echo "❌ YDNS_CONFIG 格式错误，应为：域名|用户名|密码|记录类型(A/AAAA/A&AAAA)"
-    exit 1
+    kill $$
 fi
 
 # API
