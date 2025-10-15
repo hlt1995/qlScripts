@@ -94,7 +94,7 @@ ql update
 面板升级完成后，执行安装NodeJS依赖
 ```
 cd /ql/data/scripts
-pnpm add axios jsdom ds moment sharp@0.32.0
+pnpm add axios ds moment jsdom@26.1.0 sharp@0.32.0
 ```
 
 执行安装Python3依赖
