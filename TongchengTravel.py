@@ -269,7 +269,7 @@ class Tclx:
                 result_text = f"{status_icon} 签到成功，本月签到【{mileage_info['cycle_sign_num']}】天"
             else:
                 status_icon = "❗️"
-                result_text = f"{status_icon} 签到暂不可用，请前往APP手动签到！\n本月签到【{mileage_info['cycle_sign_num']}】天"
+                result_text = f"{status_icon} 签到暂不可用，请前往APP手动签到！\n🈷️ 本月签到【{mileage_info['cycle_sign_num']}】天"
                 
             self.account_result = f"📱 账号：{self.phone}\n{result_text}\n🎁 当前里程: 【{mileage_info['mileage']}】(+{mileage_info['today_mileage']})\n\n"
         else:
