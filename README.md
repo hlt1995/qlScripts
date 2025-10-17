@@ -1,10 +1,18 @@
 ## 🔗 拉库地址
 
 ```
-ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup"
+ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py|mjs|json"
 ```
 
-拉取的文件后缀名：`js sh py mjs json`
+执行前命令：
+```
+cp /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json /ql/data/asign.json
+```
+
+执行后命令：
+```
+cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
+```
 
 > 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行 [部署教程参考](https://cloud.189.cn/web/share?code=U36RferiMvIf（访问码：2io3）)
 ---
