@@ -21,7 +21,7 @@
 // 1.修复捕获CK过期通知后无法获取别名，导致CK过期通知处理失败的问题，修改了GetPtPin() 函数。
 // 2.修复无法正确读取配置文件中的BARK_GROUP参数的问题
 // 3.添加BARK_ICON参数读取
-// 4.修复捕获账号CK失效后，sendNotify正在处理账号Remark时，青龙面板 API（获取环境变量备注）访问失败导致HTTPError: Response code 401的问题。不再调用 getEnvs() 读取备注，改为直接读取本地 JSON 文件
+// 4.修复捕获账号CK失效后，sendNotify处理账号Remark时，青龙面板 API（获取环境变量备注）访问失败导致HTTPError: Response code 401的问题。不再调用 getEnvs() 读取备注，改为直接读取本地 JSON 文件
 
 //详细说明参考 https://github.com/ccwav/QLScript2.
 const querystring = require('querystring');
