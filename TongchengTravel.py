@@ -1,8 +1,4 @@
 # -*- coding=UTF-8 -*-
-# @Project          QL_TimingScript
-# @fileName         TongchengTravel.py
-# @author           Echo
-# @EditTime         2025/3/14
 # cron: 5 12 * * *
 # const $ = new Env('同程旅行')
 """
@@ -12,18 +8,17 @@
 
 """
 import asyncio
+import os
 import time
 from datetime import datetime
-import os
-import re
-from typing import *
+
 import httpx
 
 # ==================== Bark 推送配置 ====================
 # 添加自定义参数，也可以留空
 CUSTOM_BARK_ICON = "https://gitee.com/hlt1995/BARK_ICON/raw/main/TongchengTravel.png"   # 自定义图标
 CUSTOM_BARK_GROUP = "同程旅行"              # 自定义分组
-PUSH_SWITCH = "0"                #推送开关，1开启，0关闭
+PUSH_SWITCH = "1"                #推送开关，1开启，0关闭
 # =======================================================
 
 BARK_PUSH = os.getenv("BARK_PUSH")
@@ -34,54 +29,18 @@ os.environ["BARK_ICON"] = BARK_ICON
 os.environ["BARK_GROUP"] = BARK_GROUP
 os.environ["PUSH_SWITCH"] = PUSH_SWITCH
 
-all_print_list = []
-push_summary_list = []  # 存储精简的推送内容
+def fn_print(message):
+    print(message)
 
-def fn_print(*args, sep=' ', end='\n', **kwargs):
-    global all_print_list
-    output = ""
-    # 构建输出字符串
-    for index, arg in enumerate(args):
-        if index == len(args) - 1:
-            output += str(arg)
-            continue
-        output += str(arg) + sep
-    output = output + end
-    all_print_list.append(output)
-    # 调用内置的 print 函数打印字符串
-    print(*args, sep=sep, end=end, **kwargs)
+def get_env(env_name, separator="&"):
+    env_value = os.getenv(env_name)
+    if not env_value:
+        return []
+    return env_value.split(separator)
 
-
-def get_env(env_var, separator):
-    if env_var in os.environ:
-        return re.split(separator, os.environ.get(env_var))
-    else:
-        try:
-            from dotenv import load_dotenv, find_dotenv
-            load_dotenv(find_dotenv())
-            if env_var in os.environ:
-                return re.split(separator, os.environ.get(env_var))
-            else:
-                fn_print(f"未找到{env_var}变量.")
-                return []
-        except ImportError:
-            fn_print(f"未找到{env_var}变量且无法加载dotenv.")
-            return []
-
-
-try:
-    from notify import send as notify_send
-except ImportError:
-    fn_print("无法导入青龙面板的notify模块，将使用简单的打印通知")
-    def notify_send(title, content):
-        fn_print(f"【{title}】\n{content}")
-
+notify_message = "\n"
 
 tc_cookies = get_env("tc_cookie", "@")
-push_switch = os.environ.get('PUSH_SWITCH', '1')
-bark_key = os.environ.get('BARK_KEY', '')
-bark_icon = os.environ.get('BARK_ICON', '')
-bark_group = os.environ.get('BARK_GROUP', '')
 
 
 class Tclx:
@@ -104,11 +63,15 @@ class Tclx:
             'origin': 'https://m.17u.cn',
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 TcTravel/11.0.0 tctype/wk',
             'referer': 'https://m.17u.cn/',
-            # 'content-length': str(len(payload_str.encode('utf-8'))),
             'device': self.device,
             'sec-fetch-dest': 'empty'
         }
-        self.summary_info = {}  # 存储精简的推送信息
+        self.account_result = ""
+        self.sign_success = False  # 新增：记录签到是否成功
+
+    def account_print(self, message):
+        """只打印到控制台，不收集到通知中"""
+        fn_print(f"用户【{self.phone}】 - {message}")
 
     @staticmethod
     async def get_today_date():
@@ -123,18 +86,15 @@ class Tclx:
             )
             data = response.json()
             if data['code'] != 2200:
-                fn_print(f"用户【{self.phone}】 - token失效了，请更新")
-                self.summary_info['status'] = "token失效‼️"
+                self.account_print("token失效了，请更新")
                 return None
             else:
                 today_sign = data['data']['todaySign']
                 mileage = data['data']['mileageBalance']['mileage']
-                fn_print(f"用户【{self.phone}】 - 今日{'已' if today_sign else '未'}签到，当前剩余里程{mileage}！")
+                self.account_print(f"今日{'已' if today_sign else '未'}签到，当前剩余里程{mileage}！")
                 return today_sign
         except Exception as e:
-            fn_print(f"用户【{self.phone}】 - 签到请求异常！{e}")
-            fn_print(response.text)
-            self.summary_info['status'] = "签到异常‼️"
+            self.account_print(f"签到请求异常！{e}")
             return None
 
     async def do_sign_in(self):
@@ -147,17 +107,13 @@ class Tclx:
             )
             data = response.json()
             if data['code'] != 2200:
-                fn_print(f"用户【{self.phone}】 - 签到失败了，尝试获取任务列表")
-                self.summary_info['status'] = "签到失败❌"
+                self.account_print(f"签到失败！错误信息：{data.get('message', '未知错误')}")
                 return False
             else:
-                fn_print(f"用户【{self.phone}】 - 签到成功！开始获取任务列表")
-                self.summary_info['status'] = "签到成功✅"
+                self.account_print("签到成功！")
                 return True
         except Exception as e:
-            fn_print(f"用户【{self.phone}】 - 执行签到请求异常！{e}")
-            fn_print(response.text)
-            self.summary_info['status'] = "签到异常‼️"
+            self.account_print(f"执行签到请求异常！{e}")
             return False
 
     async def get_task_list(self):
@@ -169,7 +125,7 @@ class Tclx:
             )
             data = response.json()
             if data['code'] != 2200:
-                fn_print(f"用户【{self.phone}】 - 获取任务列表失败了")
+                self.account_print("获取任务列表失败了")
                 return None
             else:
                 tasks = []
@@ -184,8 +140,7 @@ class Tclx:
                         )
                 return tasks
         except Exception as e:
-            fn_print(f"用户【{self.phone}】 - 获取任务列表请求异常！{e}")
-            fn_print(response.text)
+            self.account_print(f"获取任务列表请求异常！{e}")
             return None
 
     async def perform_tasks(self, task_code):
@@ -197,19 +152,18 @@ class Tclx:
             )
             data = response.json()
             if data['code'] != 2200:
-                fn_print(f"用户【{self.phone}】 - 执行任务【{task_code}】失败了，跳过当前任务")
+                self.account_print(f"执行任务【{task_code}】失败了，跳过当前任务")
                 return None
             else:
                 task_id = data['data']
                 return task_id
         except Exception as e:
-            fn_print(f"用户【{self.phone}】 - 执行任务【{task_code}】请求异常！{e}")
-            fn_print(response.text)
+            self.account_print(f"执行任务【{task_code}】请求异常！{e}")
             return None
 
     async def finsh_task(self, task_id):
-        max_retry = 3  # 最大重试次数
-        retry_delay = 2  # 重试间隔时间（秒）
+        max_retry = 3
+        retry_delay = 2
         for attempt in range(max_retry):
             try:
                 response = await self.client.post(
@@ -219,19 +173,16 @@ class Tclx:
                 )
                 data = response.json()
                 if data['code'] == 2200:
-                    fn_print(f"用户【{self.phone}】 - 完成任务【{task_id}】成功！开始领取奖励")
+                    self.account_print(f"完成任务【{task_id}】成功！开始领取奖励")
                     return True
                 if attempt < max_retry - 1:
-                    fn_print(f"用户【{self.phone}】 - 完成任务【{task_id}】失败了，尝试重新提交（第{attempt + 1}次重试。。）")
+                    self.account_print(f"完成任务【{task_id}】失败了，尝试重新提交（第{attempt + 1}次重试。。）")
                     await asyncio.sleep(retry_delay * (attempt + 1))
                     continue
-                fn_print(f"用户【{self.phone}】 - 完成任务【{task_id}】最终失败，跳过当前任务")
+                self.account_print(f"完成任务【{task_id}】最终失败，跳过当前任务")
                 return False
             except Exception as e:
-                error_msg = f"用户【{self.phone}】 - 完成任务【{task_id}】请求异常！{e}"
-                if 'response' in locals():
-                    error_msg += f"\n{response.text}"
-                fn_print(error_msg)
+                self.account_print(f"完成任务【{task_id}】请求异常！{e}")
                 if attempt == max_retry - 1:
                     return False
                 await asyncio.sleep(retry_delay * (attempt + 1))
@@ -245,12 +196,11 @@ class Tclx:
             )
             data = response.json()
             if data['code'] != 2200:
-                fn_print(f"用户【{self.phone}】 - 领取签到奖励失败了， 请尝试手动领取")
+                self.account_print("领取签到奖励失败了， 请尝试手动领取")
             else:
-                fn_print(f"用户【{self.phone}】 - 领取签到奖励成功！开始下一个任务")
+                self.account_print("领取签到奖励成功！开始下一个任务")
         except Exception as e:
-            fn_print(f"用户【{self.phone}】 - 领取签到奖励请求异常！{e}")
-            fn_print(response.text)
+            self.account_print(f"领取签到奖励请求异常！{e}")
 
     async def get_mileage_info(self):
         try:
@@ -261,7 +211,7 @@ class Tclx:
             )
             data = response.json()
             if data['code'] != 2200:
-                fn_print(f"用户【{self.phone}】 - 获取积分信息失败了")
+                self.account_print("获取积分信息失败了")
                 return None
             else:
                 cycle_sign_num = data['data']['cycleSighNum']
@@ -269,96 +219,97 @@ class Tclx:
                 mileage = data['data']['mileageBalance']['mileage']
                 today_mileage = data['data']['mileageBalance']['todayMileage']
                 
-                # 存储精简信息
-                self.summary_info['cycle_sign_num'] = cycle_sign_num
-                self.summary_info['continuous_history'] = continuous_history
-                self.summary_info['mileage'] = mileage
-                self.summary_info['today_mileage'] = today_mileage
-                
-                fn_print(
-                    f"用户【{self.phone}】 - 本月签到{cycle_sign_num}天，连续签到{continuous_history}天，今日共获取{today_mileage}里程，当前剩余里程{mileage}")
-                return True
+                self.account_print(f"本月签到{cycle_sign_num}天，连续签到{continuous_history}天，今日共获取{today_mileage}里程，当前剩余里程{mileage}")
+                return {
+                    'cycle_sign_num': cycle_sign_num,
+                    'mileage': mileage,
+                    'today_mileage': today_mileage
+                }
         except Exception as e:
-            fn_print(f"用户【{self.phone}】 - 获取积分信息请求异常！{e}")
-            fn_print(response.text)
+            self.account_print(f"获取积分信息请求异常！{e}")
             return None
 
     async def run(self):
-        # 初始化摘要信息
-        self.summary_info = {
-            'phone': self.phone,
-            'status': '未签到',
-            'cycle_sign_num': 0,
-            'continuous_history': 0,
-            'mileage': 0,
-            'today_mileage': 0
-        }
+        # 初始化账号结果
+        self.account_result = f"📱 账号：{self.phone}\n"
         
+        # 首先检查签到状态
         today_sign = await self.sign_in()
         if today_sign is None:
-            return self.summary_info
+            # token失效的情况
+            self.account_result += "❌ token失效，请更新\n\n"
+            return
+            
         if today_sign:
-            fn_print(f"用户【{self.phone}】 - 今日已签到，开始获取任务列表")
-            self.summary_info['status'] = "签到成功✅"
+            self.account_print("今日已签到，开始获取任务列表")
+            self.sign_success = True
         else:
-            if await self.do_sign_in():
-                fn_print(f"用户【{self.phone}】 - 签到成功，开始获取任务列表")
+            self.account_print("今日未签到，开始执行签到")
+            self.sign_success = await self.do_sign_in()
+            
+        # 获取任务列表并执行任务
         tasks = await self.get_task_list()
         if tasks:
             for task in tasks:
                 task_code = task['taskCode']
                 title = task['title']
                 browser_time = task['browserTime']
-                fn_print(f"用户【{self.phone}】 - 开始做任务【{title}】，需要浏览{browser_time}秒")
+                self.account_print(f"开始做任务【{title}】，需要浏览{browser_time}秒")
                 task_id = await self.perform_tasks(task_code)
                 if task_id:
                     await asyncio.sleep(browser_time)
                     if await self.finsh_task(task_id):
                         await self.receive_reward(task_id)
-        await self.get_mileage_info()
         
-        # 添加到推送摘要列表
-        summary = f"📱 {self.phone}\n • {self.summary_info['status']}本月签到{self.summary_info['cycle_sign_num']}天\n • 当前里程: {self.summary_info['mileage']}(+{self.summary_info['today_mileage']})"
-        push_summary_list.append(summary)
-        
-        return self.summary_info
+        # 获取最终的里程信息并构建结果
+        mileage_info = await self.get_mileage_info()
+        if mileage_info:
+            if self.sign_success:
+                status_icon = "✨️"
+                result_text = f"{status_icon} 签到成功，本月签到【{mileage_info['cycle_sign_num']}】天"
+            else:
+                status_icon = "❗️"
+                result_text = f"{status_icon} 签到暂不可用，请前往APP手动签到！\n本月签到【{mileage_info['cycle_sign_num']}】天"
+                
+            self.account_result = f"📱 账号：{self.phone}\n{result_text}\n🎁 当前里程: 【{mileage_info['mileage']}】(+{mileage_info['today_mileage']})\n\n"
+        else:
+            if self.sign_success:
+                self.account_result += "✅ 签到成功（但获取里程信息失败）\n\n"
+            else:
+                self.account_result += "❌ 签到失败且获取里程信息失败\n\n"
 
 
 async def main():
+    global notify_message
     tasks = []
+    account_instances = []
+    
     for cookie in tc_cookies:
         tclx = Tclx(cookie)
+        account_instances.append(tclx)
         tasks.append(tclx.run())
-    results = await asyncio.gather(*tasks)
-    return results
+    
+    await asyncio.gather(*tasks)
+    
+    # 收集所有账号的最终结果
+    for instance in account_instances:
+        notify_message += instance.account_result
+        
+    notify_message = notify_message.strip()
 
 
 if __name__ == '__main__':
-    results = asyncio.run(main())
+    asyncio.run(main())
     
-    # 构建精简推送内容
-    title = f"同程旅行签到 - {datetime.now().strftime('%m/%d')}"
-    push_content = ""
-    
-    for summary in push_summary_list:
-        push_content += f"\n\n{summary}"
-    
-    # 添加统计信息
-    success_count = sum(1 for r in results if r and r.get('status') in ['签到成功', '今日已签到'])
-    push_content += f""
-
-    push_content = push_content.strip()
-    
-    # 根据推送开关决定是否推送
-    if push_switch == '1':
-        if bark_key:
-            bark_send(title, push_content, bark_key, bark_icon, bark_group)
-        else:
-            notify_send(title, push_content)
+    if PUSH_SWITCH == '1':
+        try:
+            from notify import send
+            title = f"✈️ 同程旅行签到结果\n"
+            send(title, notify_message)
+        except ImportError:
+            print("未找到notify模块，使用默认打印方式")
+            print("\n" + "="*50)
+            print(notify_message)
+            print("="*50)
     else:
-        fn_print("推送开关已关闭，不发送推送通知")
-    
-    # 输出详细日志
-    fn_print("\n" + "="*50)
-    fn_print("详细执行日志:")
-    fn_print(''.join(all_print_list))
+        print("推送开关已关闭，不发送推送通知")
