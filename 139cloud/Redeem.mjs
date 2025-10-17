@@ -11,7 +11,7 @@ for (const line of configLines) {
   if (key && value !== undefined) configMap[key.trim()] = value.trim();
 }
 
-const ACCOUNT_INDEX = parseInt(configMap.ACCOUNT_INDEX, 10);
+const ACCOUNT_INDEX = parseInt(configMap.ACCOUNT_INDEX, 10) - 1;
 const TARGET_HOUR = parseInt(configMap.TARGET_HOUR, 10);
 const EXCHANGE_IDS = configMap.EXCHANGE_IDS
   .split(/[,&]/)
