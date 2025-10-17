@@ -222,13 +222,13 @@ class RUN:
             count_day = response.get('obj', {}).get('countDay', 0)
             if response.get('obj') and response['obj'].get('integralTaskSignPackageVOList'):
                 packet_name = response["obj"]["integralTaskSignPackageVOList"][0]["packetName"]
-                sign_msg = f'✨ 签到成功，获得【{packet_name}】，本周累计签到【{count_day + 1}】天'
+                sign_msg = f'✨ 签到成功，获得【{packet_name}】，本周累计签到【{count_day}】天'
                 print(sign_msg)
-                self.push_data['sign'] = f'✨ 签到成功，本周累计签到【{count_day + 1}】天'
+                self.push_data['sign'] = f'✨ 签到成功，本周累计签到【{count_day}】天'
             else:
-                sign_msg = f'📝 今日已签到，本周累计签到【{count_day + 1}】天'
+                sign_msg = f'📝 今日已签到，本周累计签到【{count_day}】天'
                 print(sign_msg)
-                self.push_data['sign'] = f'📝 今日已签到，本周累计签到【{count_day + 1}】天'
+                self.push_data['sign'] = f'📝 今日已签到，本周累计签到【{count_day}】天'
         else:
             error_msg = f'❌ 签到失败！原因：{response.get("errorMessage")}'
             print(error_msg)
