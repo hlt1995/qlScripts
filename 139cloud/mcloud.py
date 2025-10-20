@@ -6,8 +6,6 @@
 # 环境变量设置:
 #   - 从asign.json中获取auth信息
 
-# 更新日志:
-#   - [1.31]: [从asign.json获取账号信息和BARK_Key，精简推送内容]
 # 注: 本脚本仅用于个人学习和交流，请勿用于非法用途。作者不承担由于滥用此脚本所引起的任何责任，请在下载后24小时内删除。
 
 # cron: 5 12 * * *
@@ -30,10 +28,13 @@ user_amount = ''  # 用户云朵·数量
 GLOBAL_DEBUG = False
 
 # Bark推送配置
-BARK_ICON = "https://bkimg.cdn.bcebos.com/pic/58ee3d6d55fbb2fb4316d9f6261e37a4462308f77680?x-bce-process=image/resize,m_lfit,w_536,limit_1/quality,Q_70"
-BARK_GROUP = "移动云盘签到"
+# ==================== Bark 推送配置 ====================
+BARK_ICON = "https://gitee.com/hlt1995/BARK_ICON/raw/main/mcloud.png"     # 自定义图标
+BARK_GROUP = "移动云盘"                     # 自定义分组
+PUSH_SWITCH = "1"                #推送开关，1开启，0关闭
+# =======================================================
 
-
+os.environ["PUSH_SWITCH"] = PUSH_SWITCH
 # 发送通知
 def load_send():
     cur_path = path.abspath(path.dirname(__file__))
@@ -156,9 +157,9 @@ class YP:
     def log_info(self, err_msg=None, amount=None):
         global err_message, user_amount
         if err_msg is not None:
-            err_message += f'用户[{self.encrypt_account}]:{err_msg}\n'  # 错误信息
+            err_message += f'{err_msg}\n'  # 错误信息
         elif amount is not None:
-            user_amount += f'用户[{self.encrypt_account}]:{amount}\n'  # 云朵数量
+            user_amount += f'{amount}\n'  # 云朵数量
 
     # 刷新令牌
     def sso(self):
@@ -737,13 +738,16 @@ class YP:
             prizeName = value.get('prizeName')
             flag = value.get('flag')
             if flag == 1:
-                rewards += f'-待领取奖品: {prizeName}\n'
+                rewards += f'　• {prizeName}\n'
 
         receive_amount = receive_data["result"].get("receive", "")
         total_amount = receive_data["result"].get("total", "")
         print(f'\n-当前待领取:{receive_amount}云朵')
         print(f'-当前云朵数量:{total_amount}云朵')
-        msg = f'云朵数量:{total_amount} \n{rewards}'
+        if rewards:
+            msg = f"📱 用户：【{self.encrypt_account}】\n☁️ 云朵数量：【{total_amount}】\n🎁 待领取奖品：\n{rewards}"
+        else:
+            msg = f"📱 用户：【{self.encrypt_account}】\n☁️ 云朵数量：【{total_amount}】"
         self.log_info(amount = msg)
 
     # 备份云朵
@@ -841,30 +845,21 @@ if __name__ == "__main__":
         with open(asign_file, 'r', encoding='utf-8') as f:
             asign_data = json.load(f)
         
-        # 获取auth列表
         auth_list = [item['auth'] for item in asign_data.get('caiyun', [])]
         
-        # 获取bark key
         bark_key = asign_data.get('message', {}).get('bark', {}).get('key', '')
         
-        # 设置Bark环境变量
         if bark_key:
             os.environ['BARK_KEY'] = bark_key
             os.environ['BARK_ICON'] = BARK_ICON
             os.environ['BARK_GROUP'] = BARK_GROUP
         
         # 构建cookie列表 (格式: auth#手机号#00)
-        # 注意: 这里需要从auth中提取手机号，但asign.json中的auth是加密的
-        # 假设auth格式为: "cGM6MTgxNTc0MTUwNTk6TDVpejhEeXF8MXxSQ1N8MTc1ODc4NDYzMzg1MHxFMjJQLmFhX01ZY2lqc0w0cjdSeUZZTnkyTHVnV3JQeDg0LnI5QnI0VERuZDFMM0dBbGR2Zi5TTEx5djZ2VmVLRF85cHJSTGcuUms3QVFvamY4SVJWQTMxUFdXMjhDaTgxTGFRYzk1dkxGZTNlaF9tQ25FMDBFZWxPUXlCNjZnRnpsU0dCekdkQzNKZTdPSnZnZlpIZ2dXcHguS0lqSXo1cHo1MGJBV05aelUt"
-        # 我们可以尝试解码获取手机号
         cookies = []
         for auth in auth_list:
             try:
-                # 尝试base64解码
                 import base64
                 decoded = base64.b64decode(auth).decode('utf-8')
-                # 解码后的格式可能是: pc:18157415059:L5iz8Dyq|1|RCS|1758784633850|E22P.aa_MYcijsL4r7RyFYNy2LugWrPx84.r9Br4TDnd1L3GALdvf.SLLyv6vVeKD_9prRLg.Rk7AQojf8IRVA31PWW28Ci81LaQc95vLFe3eh_mCnE00EelOQyB66gFzlSGBzGdC3Je7OJvgfZHggWpx.KIJiIz5pz50bAWNZzU-
-                # 手机号在第二个冒号后
                 parts = decoded.split(':')
                 if len(parts) >= 2:
                     phone = parts[1]  # 获取手机号
@@ -900,13 +895,15 @@ if __name__ == "__main__":
     # 在load_send中获取导入的send函数
     send = load_send()
 
-    # 判断send是否可用再进行调用
-    if send:
-        # 精简推送内容，根据是否有失效账号显示不同内容
-        if err_accounts:
-            msg = f"失效账号:\n{err_accounts}云朵数量: \n{user_amount}"
+    # 判断是否推送
+    if PUSH_SWITCH == '1':
+        if send:
+            if err_accounts:
+                msg = f"⚠️ 失效账号：\n{err_accounts}\n" + user_amount
+            else:
+                msg = user_amount
+            send('☁️ 云朵资产统计', msg)
         else:
-            msg = f"所有账号ck有效\n云朵数量: \n{user_amount}"
-        send('云朵资产统计', msg)
+            print('通知服务不可用')
     else:
-        print('通知服务不可用')
+        print("推送开关已关闭，不发送推送通知")
