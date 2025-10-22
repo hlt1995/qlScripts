@@ -92,11 +92,12 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 
 - `winona.js` &emsp;环境变量：`wnn_ck`
 
->手机开启抓包软件，进入微信 -> 小程序（薇诺娜专柜商城） -> 我的 -> 积分
+>手机开启抓包软件，进入微信 -> 小程序(薇诺娜专柜商城) -> 首页小薇森林种树
 
->搜索 `https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/activityRedirect?source=` 的请求链接
+>搜索 `https://api.qiumeiapp.com/zg-activity/zg-daily/getZgForst` 的请求体中的`appUserToken`
 
->CK格式：`编码后的url` `&`
+>CK格式：`appUserToken` `&`
+
 ---
 
 
