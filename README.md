@@ -61,7 +61,7 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 
 - `SFExpress.py` &emsp;环境变量：`sfsyUrl`
 
->手机开启抓包软件，进入微信 -> 小程序 -> 我的 -> 积分
+>手机开启抓包软件，进入微信 -> 小程序(顺丰速运) -> 我的 -> 积分
 
 >搜索 `https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/activityRedirect?source=` 的请求链接
 
@@ -88,6 +88,15 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 >CK格式：`备注名&passToken&userId` `@`
 
 
+### 📦️ 薇诺娜小薇森林
+
+- `winona.js` &emsp;环境变量：`wnn_ck`
+
+>手机开启抓包软件，进入微信 -> 小程序（薇诺娜专柜商城） -> 我的 -> 积分
+
+>搜索 `https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/activityRedirect?source=` 的请求链接
+
+>CK格式：`编码后的url` `&`
 ---
 
 
