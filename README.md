@@ -88,7 +88,7 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 >CK格式：`备注名&passToken&userId` `@`
 
 
-### 📦️ 薇诺娜小薇森林
+### 🧴 薇诺娜小薇森林
 
 - `winona.js` &emsp;环境变量：`wnn_ck`
 
