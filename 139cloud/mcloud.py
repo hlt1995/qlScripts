@@ -8,7 +8,7 @@
 
 # 注: 本脚本仅用于个人学习和交流，请勿用于非法用途。作者不承担由于滥用此脚本所引起的任何责任，请在下载后24小时内删除。
 
-# cron: 20 12 * * *
+# cron: 5 12 * * *
 # const $ = new Env('移动云盘')
 
 import os
@@ -35,7 +35,7 @@ PUSH_SWITCH = "1"                #推送开关，1开启，0关闭
 # =======================================================
 
 os.environ["PUSH_SWITCH"] = PUSH_SWITCH
-# 发送通知
+
 def load_send():
     cur_path = path.abspath(path.dirname(__file__))
     notify_file = cur_path + "/notify.py"
@@ -744,10 +744,11 @@ class YP:
         total_amount = receive_data["result"].get("total", "")
         print(f'\n-当前待领取:{receive_amount}云朵')
         print(f'-当前云朵数量:{total_amount}云朵')
+    
         if rewards:
-            msg = f"📱 用户：【{self.encrypt_account}】\n☁️ 云朵数量：【{total_amount}】\n🎁 待领取奖品：\n{rewards}"
+            msg = f"📱 用户：【{self.encrypt_account}】\n☁️ 云朵数量：【{total_amount}】\n🎁 待领取奖品：\n{rewards}\n"
         else:
-            msg = f"📱 用户：【{self.encrypt_account}】\n☁️ 云朵数量：【{total_amount}】"
+            msg = f"📱 用户：【{self.encrypt_account}】\n☁️ 云朵数量：【{total_amount}】\n"
         self.log_info(amount = msg)
 
     # 备份云朵
@@ -837,7 +838,6 @@ class YP:
 
 
 if __name__ == "__main__":
-    # 从asign.json读取配置
     script_dir = path.dirname(path.abspath(__file__))
     asign_file = path.join(script_dir, 'asign.json')
     
@@ -883,16 +883,13 @@ if __name__ == "__main__":
         print("\n随机等待5-10s进行下一个账号")
         time.sleep(random.randint(5, 10))
 
-    # 输出异常账号信息
     if err_accounts != '':
         print(f"\n失效账号:\n{err_accounts}")
     else:
         print('当前所有账号ck有效')
     
-    # 精简推送内容，不包含错误信息
     print(user_amount)
     
-    # 在load_send中获取导入的send函数
     send = load_send()
 
     # 判断是否推送
