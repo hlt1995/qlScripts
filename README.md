@@ -123,7 +123,7 @@ pip3 install requests httpx pycryptodome
 
 ## 📒 jdpro库配置sendNotify.js
 
-青龙脚本订阅拉库会默认创建内置sendNotify.js覆盖jdpro库中的sendNotify.js,因此需要手动替换/ql/data/deps下的sendNotify.js
+青龙脚本订阅拉库会默认创建内置sendNotify.js覆盖jdpro库中的sendNotify.js,因此拉库前需要手动替换/ql/data/deps下的sendNotify.js
 
 下载sendNotify.js放在手机存储根目录后，Alpine下执行：
 ```
