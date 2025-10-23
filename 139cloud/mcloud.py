@@ -42,15 +42,15 @@ def load_send():
 
     if path.exists(notify_file):
         try:
-            from notify import send  # 导入模块的send为notify_send
+            from notify import send
             print("加载通知服务成功！")
-            return send  # 返回导入的函数
+            return send
         except ImportError:
             print("加载通知服务失败~")
     else:
         print("加载通知服务失败~")
 
-    return False  # 返回False表示未成功加载通知服务
+    return False
 
 
 class YP:
