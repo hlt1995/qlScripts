@@ -85,7 +85,7 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 
 >浏览器登录 [https://account.xiaomi.com/](https://account.xiaomi.com/) ,抓取cookie中的`passToken` `userId`
 
->CK格式：`备注名&passToken&userId` `@`
+>CK格式：`备注(可选)&passToken&userId` `@`
 
 
 ### 🧴 薇诺娜小薇森林
@@ -96,7 +96,7 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 
 >搜索 `https://api.qiumeiapp.com/zg-activity/zg-daily/getZgForst` 的请求体中的`appUserToken`
 
->CK格式：`appUserToken` `&`
+>CK格式：`备注(可选)#appUserToken` `&`
 
 ---
 
