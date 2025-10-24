@@ -741,7 +741,7 @@ def main():
     if force_push or PUSH_SWITCH == '1':
         send_notification()
     else:
-        print("✅推送开关已关闭，所有账号CK有效，不发送推送通知")    
+        print("✅ 推送开关已关闭，所有账号CK有效，不发送推送通知")    
 
 if __name__ == '__main__':
     main()
