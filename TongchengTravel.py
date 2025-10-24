@@ -68,6 +68,7 @@ class Tclx:
         }
         self.account_result = ""
         self.sign_success = False  # 新增：记录签到是否成功
+        self.token_invalid = False  # 新增：记录token是否失效
 
     def account_print(self, message):
         """只打印到控制台，不收集到通知中"""
@@ -87,6 +88,7 @@ class Tclx:
             data = response.json()
             if data['code'] != 2200:
                 self.account_print("token失效了，请更新")
+                self.token_invalid = True  # 标记token失效
                 return None
             else:
                 today_sign = data['data']['todaySign']
@@ -291,20 +293,26 @@ async def main():
     
     await asyncio.gather(*tasks)
     
-    # 收集所有账号的最终结果
     for instance in account_instances:
         notify_message += instance.account_result
         
     notify_message = notify_message.strip()
+    
+    has_token_invalid = any(instance.token_invalid for instance in account_instances)
+    
+    return has_token_invalid
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    has_token_invalid = asyncio.run(main())
     
-    if PUSH_SWITCH == '1':
+    # 推送通知
+    if PUSH_SWITCH == '1' or has_token_invalid:
         try:
             from notify import send
-            title = f"✈️ 同程旅行签到结果\n"
+            title = f"✈️ 同程旅行签到结果"
+            if has_token_invalid:
+                title += " ⚠️有账号Token失效"
             send(title, notify_message)
         except ImportError:
             print("未找到notify模块，使用默认打印方式")
@@ -312,4 +320,4 @@ if __name__ == '__main__':
             print(notify_message)
             print("="*50)
     else:
-        print("推送开关已关闭，不发送推送通知")
+        print("✅ 推送已关闭，所有账号Token有效，不发送推送通知")
