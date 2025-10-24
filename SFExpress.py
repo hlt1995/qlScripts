@@ -42,7 +42,6 @@ os.environ["PUSH_SWITCH"] = PUSH_SWITCH
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 PROXY_API_URL = os.getenv('SF_PROXY_API_URL', '')  # 从环境变量获取代理API地址
 
-# 尝试导入青龙面板的notify模块
 try:
     from notify import send as notify_send
 except ImportError:
@@ -71,11 +70,16 @@ def get_proxy():
 
 # 全局变量用于存储推送消息
 push_messages = []
+force_push = False
 
 def add_push_message(account_info, sign_info, point_info):
-    """添加推送消息到全局列表"""
     message = f"{account_info}\n{sign_info}\n{point_info}"
     push_messages.append(message)
+
+def add_error_message(error_info):
+    global force_push
+    force_push = True
+    push_messages.append(f"❌ {error_info}")
 
 class RUN:
     def __init__(self, info, index):
@@ -84,6 +88,7 @@ class RUN:
             'sign': '',
             'points': ''
         }
+        self.has_error = False  # 标记当前账号是否有错误
         split_info = info.split('@')
         url = split_info[0]
         len_split_info = len(split_info)
@@ -151,10 +156,18 @@ class RUN:
                 self.push_data['account'] = f'👤 账号{self.index}:【{self.mobile}】'
                 return True
             else:
-                print(f'❌ 账号{self.index}获取用户信息失败')
+                error_msg = f'账号{self.index}获取用户信息失败'
+                print(f'❌ {error_msg}')
+                self.push_data['account'] = f'❌ 账号{self.index}'
+                add_error_message(error_msg)
+                self.has_error = True
                 return False
         except Exception as e:
-            print(f'❌ 登录异常: {str(e)}')
+            error_msg = f'登录异常: {str(e)}'
+            print(f'❌ {error_msg}')
+            self.push_data['account'] = f'❌ 账号{self.index}'
+            add_error_message(error_msg)
+            self.has_error = True
             return False
 
     def getSign(self):
@@ -230,9 +243,11 @@ class RUN:
                 print(sign_msg)
                 self.push_data['sign'] = f'📝 今日已签到，本周累计签到【{count_day}】天'
         else:
-            error_msg = f'❌ 签到失败！原因：{response.get("errorMessage")}'
-            print(error_msg)
-            self.push_data['sign'] = '📝 签到失败'
+            error_msg = f'签到失败！原因：{response.get("errorMessage")}'
+            print(f'❌ {error_msg}')
+            self.push_data['sign'] = '❌ 签到失败'
+            add_error_message(error_msg)
+            self.has_error = True
 
     def superWelfare_receiveRedPacket(self):
         print(f'🎁 超值福利签到')
@@ -691,7 +706,6 @@ def send_notification():
     print(content)
     print("="*50)
     
-    # 尝试使用青龙面板的notify发送推送
     try:
         notify_send(title, content)
         print("✅ 推送发送成功")
@@ -701,6 +715,7 @@ def send_notification():
         print(f"❌ 推送发送失败: {str(e)}")
 
 def main():
+    global force_push
     ENV_NAME = 'sfsyUrl'
     local_version = '2025.10.08'
     token = os.getenv(ENV_NAME)
@@ -722,11 +737,11 @@ def main():
         if not run_result: 
             continue
 
-    # 所有账号执行完毕后发送推送
-    if PUSH_SWITCH == '1':
+    # 发送推送
+    if force_push or PUSH_SWITCH == '1':
         send_notification()
     else:
-        print("推送开关已关闭，不发送推送通知")    
+        print("✅推送开关已关闭，所有账号CK有效，不发送推送通知")    
 
 if __name__ == '__main__':
     main()
