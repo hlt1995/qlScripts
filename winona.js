@@ -12,9 +12,7 @@
 
 抓包：
     1. 抓域名api.qiumeiapp.com请求体中的appUserToken值
-    2. export wnn_ck="appUserToken"
-updata:
-    2025.03.04
+    2. 环境变量：wnn_ck="备注1（可选）#appUserToken1&备注2（可选）#appUserToken2"
 */
 
 const axios = require("axios");
@@ -54,10 +52,10 @@ function delay() {
 }
 
 class WnnTask {
-    constructor(token, index) {
+    constructor(token, remark, index) {
         this.appUserToken = token.trim();
-        this.index = index + 1;
-        this.username = `账号 ${this.index}`;
+        this.remark = remark || `账号 ${index}`;
+        this.index = index;
         this.baseUrl = "https://api.qiumeiapp.com/zg-activity/zg-daily/";
         this.headers = {
             Host: "api.qiumeiapp.com",
@@ -78,7 +76,7 @@ class WnnTask {
                 { headers: this.headers }
             );
 
-            log(`\n====== ${this.username} ======`);
+            log(`\n====== ${this.remark} ======`);
             
             switch (response.data.code) {
                 case 703:
@@ -88,20 +86,20 @@ class WnnTask {
                     log("✅ 签到成功！");
                     break;
                 case 600:
-                    const tokenErrorMsg = `❌ ${this.username} Token 失效，请重新获取！`;
+                    const tokenErrorMsg = `❌ ${this.remark} Token 失效，请重新获取！`;
                     log(tokenErrorMsg);
                     addNotifyMessage(tokenErrorMsg);
                     this.hasCriticalError = true;
                     return false;
                 default:
-                    const signErrorMsg = `❌ ${this.username} 签到失败: ${JSON.stringify(response.data)}`;
+                    const signErrorMsg = `❌ ${this.remark} 签到失败: ${JSON.stringify(response.data)}`;
                     log(signErrorMsg);
                     addNotifyMessage(signErrorMsg);
                     this.hasCriticalError = true;
                     return false;
             }
         } catch (error) {
-            const requestErrorMsg = `❌ ${this.username} 签到请求异常: ${error.message}`;
+            const requestErrorMsg = `❌ ${this.remark} 签到请求异常: ${error.message}`;
             log(requestErrorMsg);
             addNotifyMessage(requestErrorMsg);
             this.hasCriticalError = true;
@@ -246,6 +244,35 @@ class WnnTask {
     }
 }
 
+// 解析CK函数
+function parseCookies(cookieString) {
+    const accounts = [];
+    if (!cookieString) return accounts;
+    
+    const tokens = cookieString.split("&")
+        .map(item => item.trim())
+        .filter(item => item);
+    
+    tokens.forEach((item, index) => {
+        if (item.includes('#')) {
+            const [remark, token] = item.split('#', 2);
+            accounts.push({
+                remark: remark.trim(),
+                token: token.trim(),
+                index: index + 1
+            });
+        } else {
+            accounts.push({
+                remark: `账号 ${index + 1}`,
+                token: item.trim(),
+                index: index + 1
+            });
+        }
+    });
+    
+    return accounts;
+}
+
 // 主函数
 (async () => {
     console.log("薇诺娜专柜商城 v1.0.0");
@@ -258,20 +285,23 @@ class WnnTask {
         process.exit(1);
     }
 
-    const tokens = wnn.split("&")
-        .map(token => token.trim())
-        .filter(token => token);
+    const accounts = parseCookies(wnn);
 
-    if (tokens.length > 0) {
-        console.log(`\n共获取到 ${tokens.length} 个账号`);
+    if (accounts.length > 0) {
+        console.log(`\n共获取到 ${accounts.length} 个账号`);
+        accounts.forEach(account => {
+            console.log(`📝 ${account.remark}`);
+        });
+        
         const shareCode = "48d96b20";
 
-        for (let i = 0; i < tokens.length; i++) {
-            const task = new WnnTask(tokens[i], i);
+        for (let i = 0; i < accounts.length; i++) {
+            const account = accounts[i];
+            const task = new WnnTask(account.token, account.remark, account.index);
             await task.run(shareCode);
             
             // 每个任务完成后延迟一下
-            if (i < tokens.length - 1) {
+            if (i < accounts.length - 1) {
                 await delay();
             }
         }
