@@ -14,7 +14,7 @@ cp /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json /ql/data/asign.json
 cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 ```
 
-> 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行 [部署教程参考](https://cloud.189.cn/web/share?code=U36RferiMvIf（访问码：2io3）)
+* 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行 [部署教程参考](https://cloud.189.cn/web/share?code=U36RferiMvIf（访问码：2io3）)
 ---
 
 ## 📝 脚本说明
