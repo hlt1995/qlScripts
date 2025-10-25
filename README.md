@@ -81,7 +81,7 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 
 ### ✈️ 同程旅行-飞儿萌养成计划
 
-- `TCTravel_Activity.py` &emsp;环境变量：`tclx`
+- `tclx_sysign.py` &emsp;环境变量：`tclx`
 
 >手机开启抓包软件，复制 `#小程序://同程旅行/cKtGyU58WAvoyGF` 到微信打开
 
