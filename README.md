@@ -79,6 +79,17 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 >CK格式：`手机号#appToken#device` `@`
 
 
+### ✈️ 同程旅行-飞儿萌养成计划
+
+- `TCTravel_Campaign.py` &emsp;环境变量：`tclx`
+
+>手机开启抓包软件，复制 '#小程序://同程旅行/cKtGyU58WAvoyGF' 到微信打开
+
+>搜索 `https://cvg.17usoft.com` 任意请求体中的 `idenId`
+
+>CK格式：`idenId`
+
+
 ### 👛 小米钱包
 
 - `XiaomiWallet_A.py` &emsp;环境变量：`xmqb`
