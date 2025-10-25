@@ -83,7 +83,7 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 
 - `TCTravel_Activity.py` &emsp;环境变量：`tclx`
 
->手机开启抓包软件，复制 '#小程序://同程旅行/cKtGyU58WAvoyGF' 到微信打开
+>手机开启抓包软件，复制 `#小程序://同程旅行/cKtGyU58WAvoyGF` 到微信打开
 
 >搜索 `https://cvg.17usoft.com` 任意请求体中的 `idenId`
 
