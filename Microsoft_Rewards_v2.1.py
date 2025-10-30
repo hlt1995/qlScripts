@@ -84,7 +84,7 @@ TASK_CONFIG = {
     'RETRY_DELAY': 2,                # 重试延迟（秒）
     'REQUEST_TIMEOUT': 15,           # 请求超时时间（秒）
     'HOT_WORDS_MAX_COUNT': 30,       # 热搜词最大数量
-    'MAX_REPEAT_COUNT': 3,           # 最大重复运行次数
+    'MAX_REPEAT_COUNT': 2,           # 最大重复运行次数
 }
 
 # 缓存配置
