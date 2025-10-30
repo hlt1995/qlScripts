@@ -16,6 +16,10 @@ from email.utils import formataddr
 
 import requests
 
+# 修改：hlt1995
+# 编辑时间：2025-10-30
+# 1.新增Bark分段推送
+
 # 原先的 print 函数和主线程的锁
 _print = print
 mutex = threading.Lock()
@@ -124,7 +128,7 @@ def bark(title: str, content: str) -> None:
     for line in lines:
         if any(keyword in line for keyword in ['账号', '用户', 'user', 'account']):
             account_count += 1
-            if account_count > 1 and account_count % 6 == 1:
+            if account_count > 1 and account_count % 6 == 1:  # Bark分段推送
                 segments.append('\n'.join(current_segment))
                 current_segment = []
         current_segment.append(line)
