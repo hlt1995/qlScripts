@@ -857,10 +857,12 @@ async function showMsg() {
 
     }
 
-    // if(strGuoqi){		
-		// ReturnMessage += `💸💸💸临期京豆明细💸💸💸\n`;
-		// ReturnMessage += `${strGuoqi}`;
-	// }
+    if(strGuoqi){
+		if(new Date().getDay() === 1) {
+		    ReturnMessage += `💸💸💸临期京豆明细💸💸💸\n`;
+		    ReturnMessage += `${strGuoqi}`;
+		}
+	}
 
     ReturnMessage += `${$.message}`;
     strsummary += `红包${$.balance}元`
