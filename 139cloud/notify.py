@@ -116,10 +116,49 @@ def bark(title: str, content: str) -> None:
         return
     print("bark 服务启动")
 
-    if push_config.get("BARK_PUSH").startswith("http"):
-        url = f'{push_config.get("BARK_PUSH")}/{urllib.parse.quote_plus(title)}/{urllib.parse.quote_plus(content)}'
+    # 分段推送逻辑：每10个账号为一段
+    lines = content.split('\n')
+    segments = []
+    current_segment = []
+    account_count = 0
+    
+    for line in lines:
+        # 判断是否为账号行（这里可以根据实际内容调整判断逻辑）
+        if any(keyword in line for keyword in ['账号', '用户', 'user', 'account']):
+            account_count += 1
+            # 每10个账号开始新的一段
+            if account_count > 1 and account_count % 6 == 1:
+                segments.append('\n'.join(current_segment))
+                current_segment = []
+        current_segment.append(line)
+    
+    # 添加最后一段
+    if current_segment:
+        segments.append('\n'.join(current_segment))
+    
+    # 如果不需要分段（账号数少于等于10），则按原逻辑推送
+    if len(segments) <= 1:
+        _send_bark_segment(title, content)
     else:
-        url = f'https://api.day.app/{push_config.get("BARK_PUSH")}/{urllib.parse.quote_plus(title)}/{urllib.parse.quote_plus(content)}'
+        # 分段推送
+        total_segments = len(segments)
+        for i, segment in enumerate(segments, 1):
+            segment_title = f"{title} ({i}/{total_segments})"
+            _send_bark_segment(segment_title, segment)
+            # 添加短暂延迟，避免推送过于频繁
+            if i < total_segments:
+                time.sleep(1)
+
+
+def _send_bark_segment(title: str, content: str) -> None:
+    """
+    发送单个 Bark 推送段
+    """
+    clean_content = content.strip()
+    if push_config.get("BARK_PUSH").startswith("http"):
+        url = f'{push_config.get("BARK_PUSH")}/{urllib.parse.quote_plus(title)}/{urllib.parse.quote_plus(clean_content)}'
+    else:
+        url = f'https://api.day.app/{push_config.get("BARK_PUSH")}/{urllib.parse.quote_plus(title)}/{urllib.parse.quote_plus(clean_content)}'
 
     bark_params = {
         "BARK_ARCHIVE": "isArchive",
@@ -138,12 +177,15 @@ def bark(title: str, content: str) -> None:
         params += f"{bark_params.get(pair[0])}={pair[1]}&"
     if params:
         url = url + "?" + params.rstrip("&")
-    response = requests.get(url).json()
-
-    if response["code"] == 200:
-        print("bark 推送成功！")
-    else:
-        print("bark 推送失败！")
+    
+    try:
+        response = requests.get(url, timeout=10).json()
+        if response["code"] == 200:
+            print("bark 推送成功！")
+        else:
+            print("bark 推送失败！")
+    except Exception as e:
+        print(f"bark 推送异常：{e}")
 
 
 def console(title: str, content: str) -> None:
