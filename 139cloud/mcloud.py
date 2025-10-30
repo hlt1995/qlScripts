@@ -104,9 +104,11 @@ class YP:
             self.click()
             # 任务
             self.get_tasklist(url = 'sign_in_3', app_type = 'cloud_app')
-            #print(f'\n☁️ 云朵大作战')
+            print(f'\n☁️ 云朵大作战')
+            print(f'-已跳过：暂时无法执行，请前往APP手动完成')
             #self.cloud_game()
-            #print(f'\n🌳 果园任务')
+            print(f'\n🌳 果园任务')
+            print(f'-已结束：果园任务已结束')
             #self.fruitLogin()
             print(f'\n📰 公众号任务')
             self.wxsign()
