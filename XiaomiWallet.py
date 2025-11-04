@@ -3,6 +3,7 @@
 
 #每天两次视频任务
 #环境变量 xmqb ，格式为：备注名&passToken&userId，多账号用@隔开
+#环境变量 xmqb_UA ，用于自定义User-Agent，不设置则使用默认UA
 #浏览器打开https://account.xiaomi.com/ 登陆
 
 import os
@@ -29,6 +30,19 @@ os.environ["PUSH_SWITCH"] = PUSH_SWITCH
 
 import notify
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# 默认UA
+DEFAULT_UA = 'Mozilla/5.0 (Linux; U; Android 14; zh-CN; M2012K11AC Build/UKQ1.230804.001; AppBundle/com.mipay.wallet; AppVersionName/6.89.1.5275.2323; AppVersionCode/20577595; MiuiVersion/stable-V816.0.13.0.UMNCNXM; DeviceId/alioth; NetworkType/WIFI; mix_version; WebViewVersion/118.0.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36 XiaoMi/MiuiBrowser/4.3'
+
+def get_custom_ua():
+    """获取自定义UA，如果没有设置则使用默认UA"""
+    custom_ua = os.environ.get("xmqb_UA", "").strip()
+    if custom_ua:
+        print(f"✅ 读取到xmqb_UA变量，使用自定义UA: {custom_ua}")
+        return custom_ua
+    else:
+        print(f"✅ 未配置xmqb_UA变量，使用默认UA: {DEFAULT_UA[:50]}...")  # 只打印前50个字符避免过长
+        return DEFAULT_UA
 
 
 def get_ck_from_env():
@@ -61,11 +75,11 @@ def get_ck_from_env():
 
 
 class RnlRequest:
-    def __init__(self, cookies: Union[str, dict]):
+    def __init__(self, cookies: Union[str, dict], user_agent: str):
         self.session = requests.Session()
         self._base_headers = {
             'Host': 'm.jr.airstarfinance.net',
-            'User-Agent': 'Mozilla/5.0 (Linux; U; Android 14; zh-CN; M2012K11AC Build/UKQ1.230804.001; AppBundle/com.mipay.wallet; AppVersionName/6.89.1.5275.2323; AppVersionCode/20577595; MiuiVersion/stable-V816.0.13.0.UMNCNXM; DeviceId/alioth; NetworkType/WIFI; mix_version; WebViewVersion/118.0.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36 XiaoMi/MiuiBrowser/4.3',
+            'User-Agent': user_agent,  # 使用传入的UA
         }
         self.update_cookies(cookies)
 
@@ -138,7 +152,7 @@ class RnlRequest:
 
 
 class RNL:
-    def __init__(self, c):
+    def __init__(self, c, user_agent: str):
         self.t_id = None
         self.options = {
             "task_list": True,
@@ -148,7 +162,7 @@ class RNL:
             "UserJoin": True,
         }
         self.activity_code = '2211-videoWelfare'
-        self.rr = RnlRequest(c)
+        self.rr = RnlRequest(c, user_agent)  # 传入UA
         self.current_display_name = None  # 存储当前处理的账号显示名
         self.total_days = "未知"
         self.today_records = []
@@ -310,11 +324,11 @@ class RNL:
         return True
 
 
-def get_xiaomi_cookies(pass_token, user_id):
+def get_xiaomi_cookies(pass_token, user_id, user_agent: str):
     session = requests.Session()
     login_url = 'https://account.xiaomi.com/pass/serviceLogin?callback=https%3A%2F%2Fapi.jr.airstarfinance.net%2Fsts%3Fsign%3D1dbHuyAmee0NAZ2xsRw5vhdVQQ8%253D%26followup%3Dhttps%253A%252F%252Fm.jr.airstarfinance.net%252Fmp%252Fapi%252Flogin%253Ffrom%253Dmipay_indexicon_TVcard%2526deepLinkEnable%253Dfalse%2526requestUrl%253Dhttps%25253A%25252F%25252Fm.jr.airstarfinance.net%25252Fmp%25252Factivity%25252FvideoActivity%25253Ffrom%25253Dmipay_indexicon_TVcard%252526_noDarkMode%25253Dtrue%252526_transparentNaviBar%25253Dtrue%252526cUserId%25253Dusyxgr5xjumiQLUoAKTOgvi858Q%252526_statusBarHeight%25253D137&sid=jrairstar&_group=DEFAULT&_snsNone=true&_loginType=ticket'
     headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0',
+        'user-agent': user_agent,  # 使用传入的UA
         'cookie': f'passToken={pass_token}; userId={user_id};'
     }
 
@@ -343,6 +357,9 @@ def generate_notification(display_name, rnl_instance):
 
 if __name__ == "__main__":
     
+    # 获取自定义UA
+    CURRENT_UA = get_custom_ua()
+    
     ORIGINAL_COOKIES = get_ck_from_env()
     if not ORIGINAL_COOKIES:
         print("❌ 未获取到账号CK，请检查青龙环境变量 xmqb 是否配置正确！")
@@ -358,7 +375,7 @@ if __name__ == "__main__":
         print(f"\n>>>>>>>>>> 正在处理账号 {display_name} <<<<<<<<<<")
         
         # 获取Cookie
-        cookie_result = get_xiaomi_cookies(account['passToken'], user_id)
+        cookie_result = get_xiaomi_cookies(account['passToken'], user_id, CURRENT_UA)
         
         # 处理返回结果
         if isinstance(cookie_result, tuple):
@@ -367,8 +384,8 @@ if __name__ == "__main__":
             new_cookie = cookie_result
             error = None
         
-        # 创建RNL实例并设置当前显示名
-        rnl = RNL(new_cookie)
+        # 创建RNL实例并设置当前显示名，传入UA
+        rnl = RNL(new_cookie, CURRENT_UA)
         rnl.current_display_name = display_name
         
         if error:
