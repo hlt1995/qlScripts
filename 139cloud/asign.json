@@ -32,7 +32,7 @@
     "bark": {
       "key": "",
       "level": "passive",
-      "group": "移动云盘签到",
+      "group": "移动云盘",
       "icon": "https://gitee.com/hlt1995/BARK_ICON/raw/main/mcloud.png",
       "title": "云朵兑换结果"
     },
