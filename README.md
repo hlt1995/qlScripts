@@ -90,13 +90,13 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 >CK格式：`idenId`
 
 
-### 👛 小米钱包
+//### 👛 小米钱包
 
-- `XiaomiWallet_A.py` &emsp;环境变量：`xmqb`
+//- `XiaomiWallet_A.py` &emsp;环境变量：`xmqb`
 
->浏览器登录 [https://account.xiaomi.com/](https://account.xiaomi.com/) ,抓取cookie中的`passToken` `userId`
+//>浏览器登录 [https://account.xiaomi.com/](https://account.xiaomi.com/) ,抓取cookie中的`passToken` `userId`
 
->CK格式：`备注(可选)&passToken&userId` `@`
+//>CK格式：`备注(可选)&passToken&userId` `@`
 
 
 ### 🧴 薇诺娜小薇森林
