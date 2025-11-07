@@ -244,7 +244,7 @@ class YP:
     def shake(self):
         url = "https://caiyun.feixin.10086.cn:7071/market/shake-server/shake/shakeIt?flag=1"
         successful_shakes = 0  # 记录成功摇中的次数
-        print(f'执行 {self.click_num} 次，正在抽取...')
+        print(f'- 🔁执行 {self.click_num} 次，正在抽取...')
 
         try:
             for _ in range(self.click_num):
