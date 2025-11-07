@@ -51,7 +51,7 @@ const formatMilliseconds = (ms) => {
   return `${hours}小时 ${minutes}分钟 ${seconds}秒 ${milliseconds}毫秒`;
 };
 
-// 等待到目标时间点（最大等待2分钟）
+// 等待到目标时间
 const waitToTargetHour = (targetHour = 0) => {
   const now = new Date();
 
