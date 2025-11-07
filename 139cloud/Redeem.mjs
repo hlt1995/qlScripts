@@ -38,12 +38,10 @@ const getNearestTargetHour = () => {
   return 12;
 };
 
-// 格式化时间为易读格式
 const formatTime = (date) => {
   return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
 };
 
-// 格式化毫秒为易读时间
 const formatMilliseconds = (ms) => {
   const hours = Math.floor(ms / (1000 * 60 * 60));
   const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
@@ -56,9 +54,15 @@ const formatMilliseconds = (ms) => {
 // 等待到目标时间点（最大等待2分钟）
 const waitToTargetHour = (targetHour = 0) => {
   const now = new Date();
+
+  console.log(``);
+  console.log(`🚀 开始执行兑换脚本...`);
+  console.log(`🕒 当前时间: ${formatTime(now)}`);
+  console.log(``);
+  console.log(`🔍 匹配最佳兑换时间...`);
+  
   const target = new Date();
   
-  // 设置目标时间
   if (targetHour === 0) {
     target.setDate(target.getDate() + 1);
     target.setHours(0, 0, 0, 0);
@@ -69,17 +73,20 @@ const waitToTargetHour = (targetHour = 0) => {
   let ms = target - now;
   const twoMinutes = 2 * 60 * 1000;
   
-  // 输出目标时间和等待时间
+  console.log(`🎯 兑换时间: ${formatTime(target)}`);
   console.log(``);
-  console.log(`✅️ 自动配置兑换时间点`);
-  console.log(`🎯 目标时间: ${formatTime(target)}`);
-  console.log(`🕒 当前时间: ${formatTime(now)}`);
-  console.log(`⏱️ 等待时间: ${formatMilliseconds(ms)}`);
+  console.log(`🖊️ 计算等待时间...`);
   
   if (ms > twoMinutes) {
     console.log(`⚠️ 等待时间超过2分钟，将在2分钟后执行兑换`);
+    console.log(`⏱️ 等待时间: 2分钟 0秒 0毫秒`);
     ms = twoMinutes;
+  } else {
+    console.log(`⏱️ 等待时间: ${formatMilliseconds(ms)}`);
   }
+  
+  console.log(``);
+  console.log(`🟢 准备就绪，正在计时...`);
   
   return new Promise(resolve => setTimeout(resolve, ms));
 };
@@ -90,9 +97,11 @@ const TARGET_HOUR = getNearestTargetHour();
 await waitToTargetHour(TARGET_HOUR);
 
 // 兑换奖品
+console.log(`⏰ 倒计时结束，开始执行兑换...`);
 await exchange(EXCHANGE_IDS);
 
 // 快速兑换
+// console.log(`⏰ 倒计时结束，开始执行兑换...\n`);
 // await exchangeQuickly(EXCHANGE_IDS, '奖品');
 
 // 发送推送
