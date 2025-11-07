@@ -57,6 +57,10 @@ BARK_GROUP = CUSTOM_BARK_GROUP or os.getenv("BARK_GROUP", "")
 os.environ["BARK_ICON"] = BARK_ICON
 os.environ["BARK_GROUP"] = BARK_GROUP
 
+delay = random.randint(0, 1800)
+print(f"⏳ 任务随机延迟 {delay} 秒后开始执行...")
+time.sleep(delay)
+
 # ==================== 用户配置区域 ====================
 # 在这里修改您的配置参数
 # 
