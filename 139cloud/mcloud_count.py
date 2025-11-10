@@ -280,8 +280,8 @@ class YP:
 
         receive_amount = receive_data["result"].get("receive", "")
         total_amount = receive_data["result"].get("total", "")
-        print(f'-当前待领取:{receive_amount}云朵')
-        print(f'-当前云朵数量:{total_amount}云朵')
+        print(f'- 🌩️当前待领取:{receive_amount}云朵')
+        print(f'- 🌥️当前云朵数量:{total_amount}云朵')
 
         if rewards:
             msg = f"📱 用户：【{self.encrypt_account}】\n☁️ 云朵数量：【{total_amount}】\n🎁 待领取奖品：\n{rewards}"
