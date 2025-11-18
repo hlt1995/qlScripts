@@ -109,6 +109,12 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 
 >CK格式：`备注(可选)#appUserToken` `&`
 
+
+### 🌟 电信营业厅
+
+- `ChinaTelecomyyt.js` &emsp;环境变量：`chinaTelecomAccount`
+
+>CK格式：`手机号#服务密码` `&`
 ---
 
 
