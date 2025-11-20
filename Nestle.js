@@ -1,9 +1,7 @@
 // 大大鸣版 雀巢
-
 // 环境变量 NESTLE_TOKEN  抓取 Authorization 的值，例如：bearer 0610099d-550e-4e8d-9624-6840ff680812，只需要 bearer 后面的值
-/**
- * const $ = new Env('雀巢')
- * cron: 30 12 * * * (建议根据实际情况调整)
+//name: 雀巢
+//cron: 30 12 * * *
  * 变量：export NESTLE_TOKEN="Authorization"
  * 入口：#小程序://雀巢会员/O0NOfAHwAGV3tZb
  *
