@@ -117,7 +117,7 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 >CK格式：`手机号#服务密码` `&`
 
 
-### ☕️ 雀巢
+### ☕️ 雀巢会员
 
 - `Nestle.js` &emsp;环境变量：`NESTLE_TOKEN`
 
