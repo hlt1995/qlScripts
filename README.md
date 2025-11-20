@@ -115,6 +115,19 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 - `ChinaTelecomyyt.js` &emsp;环境变量：`chinaTelecomAccount`
 
 >CK格式：`手机号#服务密码` `&`
+
+
+### ☕️ 雀巢
+
+- `Nestle.js` &emsp;环境变量：`NESTLE_TOKEN`
+
+>手机开启抓包软件，复制 `#小程序://雀巢会员/O0NOfAHwAGV3tZb` 到微信打开
+
+>搜索 `https://crm.nestlechinese.com/openapi/activityservice/api` 的任意请求头中的`Authorization`
+
+>CK格式：`Authorization` `&`
+
+
 ---
 
 
