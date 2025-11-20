@@ -11,7 +11,7 @@
 
 //自己的User-Agent  不设置将会调用getRandomUserAgent随机分配
 // https://useragent.todaynav.com/ 微信打开此网站即可
-var User_Agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.65(0x1800412b) NetType/WIFI Language/zh_CN";
+var User_Agent = "";
 
 const axios = require("axios");
 const $ = {
