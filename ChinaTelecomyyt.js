@@ -1,5 +1,5 @@
 //name: 电信营业厅
-//cron: 30 12 * * *
+//cron: 0 13 * * *
 
 (function (_0x1398c0) {
   process.env.NODE_OPTIONS = "--max-old-space-size=4096 --openssl-legacy-provider";
