@@ -127,7 +127,7 @@ def bark(title: str, content: str) -> None:
         if any(keyword in line for keyword in ['账号', '用户', 'user', 'account']):
             account_count += 1
             # 每10个账号开始新的一段
-            if account_count > 1 and account_count % 6 == 1:
+            if account_count > 1 and account_count % 10 == 1: # 可自行修改分段账号数量
                 segments.append('\n'.join(current_segment))
                 current_segment = []
         current_segment.append(line)
