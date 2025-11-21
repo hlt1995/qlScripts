@@ -128,7 +128,7 @@ def bark(title: str, content: str) -> None:
     for line in lines:
         if any(keyword in line for keyword in ['账号', '用户', 'user', 'account']):
             account_count += 1
-            if account_count > 1 and account_count % 7 == 1:  # Bark分段推送
+            if account_count > 1 and account_count % 10 == 1:  # Bark分段推送
                 segments.append('\n'.join(current_segment))
                 current_segment = []
         current_segment.append(line)
