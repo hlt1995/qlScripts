@@ -16,6 +16,10 @@ from email.utils import formataddr
 
 import requests
 
+# 修改：hlt1995
+# 编辑时间：2025-10-30
+# 1.新增Bark分段推送，删除内容末尾多余空行
+
 # 原先的 print 函数和主线程的锁
 _print = print
 mutex = threading.Lock()
