@@ -310,7 +310,7 @@ if __name__ == '__main__':
     if PUSH_SWITCH == '1' or has_token_invalid:
         try:
             from notify import send
-            title = f"✈️ 同程旅行签到结果"
+            title = f"✈️ 同程旅行签到结果\n"
             if has_token_invalid:
                 title += " ⚠️有账号Token失效"
             send(title, notify_message)
