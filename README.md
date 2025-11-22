@@ -1,17 +1,7 @@
 ## 🔗 拉库地址
 
 ```
-ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py|mjs|json"
-```
-
-执行前命令：
-```
-cp /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json /ql/data/asign.json
-```
-
-执行后命令：
-```
-cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
+ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 ```
 
 * 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行 [部署教程参考](https://cloud.189.cn/web/share?code=U36RferiMvIf（访问码：2io3）)
@@ -37,13 +27,13 @@ cp /ql/data/asign.json /ql/data/scripts/hlt1995_qlScripts/139cloud/asign.json
 >支持Bark推送，点击bark通知即可跳转领取页面
 
 
-### ☁️ 移动云盘签到
+### ☁️ 移动云盘
 
-- `caiyun.ql.mjs` &emsp;配置文件：`asign.json`
+- `mcloud.py` &emsp;环境变量：`ydyp_ck`
 
->浏览器登录 [https://yun.139.com/](https://yun.139.com/)
+>浏览器登录 [https://yun.139.com/](https://yun.139.com/) ,抓取cookie中的Authorization的值
 
->抓取cookie中的Authorization写入配置文件
+>CK格式：`Basic xxx` `@`
 
 
 ### 🏅 Microsoft Rewards 自动积分
