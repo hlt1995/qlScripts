@@ -2,9 +2,9 @@
 # 功能描述: [签到 基础任务 果园 云朵大作战]
 # 使用说明:
 #   - [抓包 Cookie：任意Authorization]
-#   - [注意事项: Authorization复制不要带Basic]
+#   - [例: Basic cGMxxxxgzt@cGMxxxxgzra]
 # 环境变量设置:
-#   - 从asign.json中获取auth信息
+#   - ydyp_ck
 
 # 注: 本脚本仅用于个人学习和交流，请勿用于非法用途。作者不承担由于滥用此脚本所引起的任何责任，请在下载后24小时内删除。
 
@@ -856,28 +856,25 @@ if __name__ == "__main__":
             os.environ['BARK_ICON'] = BARK_ICON
             os.environ['BARK_GROUP'] = BARK_GROUP
         
-        # 构建cookie列表 (格式: auth#手机号#00)
+        ck_env = os.environ.get("ydyp_ck", "")
+        if not ck_env:
+            print("未获取到环境变量 ydyp_ck")
+            exit(0)
+
+        ck_list = ck_env.split("@")
+
         cookies = []
-        for auth in auth_list:
+        for ck in ck_list:
             try:
-                import base64
-                decoded = base64.b64decode(auth).decode('utf-8')
-                parts = decoded.split(':')
-                if len(parts) >= 2:
-                    phone = parts[1]  # 获取手机号
-                    cookies.append(f"Basic {auth}#{phone}#00")
+                if "#" in ck:
+                    cookies.append(ck)
                 else:
-                    print(f"无法从auth中提取手机号: {auth}")
+                    cookies.append(f"{ck}#13800138000#00")
             except Exception as e:
-                print(f"解析auth失败: {e}")
-                # 如果无法解析，使用默认手机号
-                cookies.append(f"Basic {auth}#13800138000#00")
+                print(f"解析账号失败: {e}")
+                continue
         
         print(f"移动云盘共获取到{len(cookies)}个账号")
-        
-    except Exception as e:
-        print(f"读取asign.json失败: {e}")
-        exit(0)
 
     for i, account_info in enumerate(cookies, start = 1):
         print(f"\n======== ▷ 第 {i} 个账号 ◁ ========")
