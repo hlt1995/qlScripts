@@ -33,7 +33,7 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 
 >浏览器登录 [https://yun.139.com/](https://yun.139.com/) ,抓取cookie中的Authorization的值
 
->CK格式：`Basic xxx` `@`
+>CK格式：`Authorization` `@`
 
 
 ### 🏅 Microsoft Rewards 自动积分
@@ -113,7 +113,7 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 
 >手机开启抓包软件，复制 `#小程序://雀巢会员/O0NOfAHwAGV3tZb` 到微信打开
 
->搜索 `https://crm.nestlechinese.com/openapi/activityservice/api` 的任意请求头中的`Authorization`
+>搜索 `https://crm.nestlechinese.com/openapi/activityservice/api` 的任意请求头中的 `Authorization`
 
 >CK格式：`Authorization` `&`
 
@@ -132,7 +132,7 @@ ql update
 面板升级完成后，执行安装NodeJS依赖
 ```
 cd /ql/data/scripts
-pnpm add axios ds moment jsdom@26.1.0 sharp@0.32.0
+pnpm add axios ds moment node-rsa xmldom jsdom@26.1.0 sharp@0.32.0
 ```
 
 执行安装Python3依赖
