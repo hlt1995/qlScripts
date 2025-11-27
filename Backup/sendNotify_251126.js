@@ -2278,9 +2278,10 @@ async function getEnvs(){
                 authorization: `Bearer ${token}`,
             },
         }).json();
+		console.log(`获取环境变量成功!`);
         return body.data || [];
     } catch (err) {
-        console.log(`获取环境变量失败: ${err.message}`);
+        console.log(`获取环境变量失败: ${err.message}\n`);
         return [];
     }
 }
