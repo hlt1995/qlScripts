@@ -3,6 +3,22 @@
 # const $ = new Env('网络唤醒')
 """
 Wake-on-LAN 网络唤醒
+
+变量示例
+局域网单设备唤醒：export WOL_MAC=AA-BB-CC-DD-EE-FF
+局域网多设备唤醒：export WOL_MAC=AA-BB-CC-DD-EE-FF&AA-BB-CC-DD-EE-GG
+外网单设备唤醒：
+export WOL_MAC=AA-BB-CC-DD-EE-FF
+export WOL_IP=123.123.123.123
+export WOL_PORT=9001(不填则为默认端口9)
+外网多设备单网络唤醒：
+export WOL_MAC=AA-BB-CC-DD-EE-FF&AA-BB-CC-DD-EE-GG
+export WOL_IP=123.123.123.123
+export WOL_PORT=9001&9002(不填则为默认端口9)
+外网多设备多网络唤醒：
+export WOL_MAC=AA-BB-CC-DD-EE-FF&AA-BB-CC-DD-EE-GG
+export WOL_IP=123.123.123.123&124.124.124.124
+export WOL_PORT=9001&9002(不填则为默认端口9)
 """
 
 import socket
