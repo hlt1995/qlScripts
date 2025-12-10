@@ -16,6 +16,7 @@ import random
 import re
 import time
 import json
+import base64
 from os import path
 
 import requests
@@ -36,6 +37,7 @@ PUSH_SWITCH = "1"                #推送开关，1开启，0关闭
 
 os.environ["PUSH_SWITCH"] = PUSH_SWITCH
 
+# 发送通知
 def load_send():
     cur_path = path.abspath(path.dirname(__file__))
     notify_file = cur_path + "/notify.py"
@@ -64,10 +66,14 @@ class YP:
 
         self.timestamp = str(int(round(time.time() * 1000)))
         self.cookies = {'sensors_stay_time': self.timestamp}
-        self.Authorization = cookie.split("#")[0]
-        self.account = cookie.split("#")[1]
-        self.auth_token = cookie.split("#")[2]
-        self.encrypt_account = self.account[:3] + "*" * 4 + self.account[7:]
+        
+        self.parse_cookie(cookie)
+        
+        if self.account and len(self.account) >= 7:
+            self.encrypt_account = self.account[:3] + "*" * 4 + self.account[7:]
+        else:
+            self.encrypt_account = self.account or "未知账号"
+            
         self.fruit_url = 'https://happy.mail.10086.cn/jsp/cn/garden/'
 
         self.jwtHeaders = {
@@ -82,6 +88,39 @@ class YP:
             'Referer': 'https://happy.mail.10086.cn/jsp/cn/garden/wap/index.html?sourceid=1003',
             'Cookie': '',
         }
+
+    def parse_cookie(self, cookie):
+        if '#' in cookie:
+            parts = cookie.split("#")
+            if len(parts) >= 3:
+                self.Authorization = parts[0]
+                self.account = parts[1]
+                self.auth_token = parts[2]
+                print(f"使用旧格式账号: {self.account[:3] + '*' * 4 + self.account[7:] if len(self.account) >= 7 else self.account}")
+                return
+        
+        self.Authorization = cookie.strip()
+        self.auth_token = "00"  
+        
+        try:
+            if self.Authorization.startswith("Basic "):
+                auth_value = self.Authorization[6:]
+            else:
+                auth_value = self.Authorization
+            
+            decoded_bytes = base64.b64decode(auth_value)
+            decoded_str = decoded_bytes.decode('utf-8')
+            
+            parts = decoded_str.split(':')
+            if len(parts) >= 2:
+                self.account = parts[1]
+            else:
+                raise ValueError("无法从CK中解析手机号")
+                
+        except Exception as e:
+            print(f"解析CK失败: {e}")
+            self.account = "13800138000"
+            print(f"使用默认手机号: {self.account}")
 
     # 捕获异常
     
@@ -102,14 +141,11 @@ class YP:
         if self.jwt():
             self.signin_status()
             self.click()
-            # 任务
             self.get_tasklist(url = 'sign_in_3', app_type = 'cloud_app')
             print(f'\n☁️ 云朵大作战')
-            print(f'-已跳过：暂时无法执行，请前往APP手动完成')
-            #self.cloud_game()
+            self.cloud_game()
             print(f'\n🌳 果园任务')
-            print(f'-已结束：果园任务已结束')
-            #self.fruitLogin()
+            self.fruitLogin()
             print(f'\n📰 公众号任务')
             self.wxsign()
             self.shake()
@@ -159,9 +195,9 @@ class YP:
     def log_info(self, err_msg=None, amount=None):
         global err_message, user_amount
         if err_msg is not None:
-            err_message += f'{err_msg}\n'  # 错误信息
+            err_message += f'用户[{self.encrypt_account}]:{err_msg}\n'  # 错误信息
         elif amount is not None:
-            user_amount += f'{amount}\n'  # 云朵数量
+            user_amount += f'用户[{self.encrypt_account}]:{amount}\n'  # 云朵数量
 
     # 刷新令牌
     def sso(self):
@@ -480,7 +516,7 @@ class YP:
             "latlng": "",
             "location": "",
             "noteid": note_id,
-            "notestatus": 0,
+            'notestatus': 0,
             "remindtime": "",
             "remindtype": 1,
             "revision": "1",
@@ -740,17 +776,13 @@ class YP:
             prizeName = value.get('prizeName')
             flag = value.get('flag')
             if flag == 1:
-                rewards += f'　• {prizeName}\n'
+                rewards += f'-待领取奖品: {prizeName}\n'
 
         receive_amount = receive_data["result"].get("receive", "")
         total_amount = receive_data["result"].get("total", "")
         print(f'\n-当前待领取:{receive_amount}云朵')
         print(f'-当前云朵数量:{total_amount}云朵')
-    
-        if rewards:
-            msg = f"📱 用户：【{self.encrypt_account}】\n☁️ 云朵数量：【{total_amount}】\n🎁 待领取奖品：\n{rewards}\n"
-        else:
-            msg = f"📱 用户：【{self.encrypt_account}】\n☁️ 云朵数量：【{total_amount}】\n"
+        msg = f'云朵数量:{total_amount} \n{rewards}'
         self.log_info(amount = msg)
 
     # 备份云朵
@@ -840,41 +872,15 @@ class YP:
 
 
 if __name__ == "__main__":
-    script_dir = path.dirname(path.abspath(__file__))
-    asign_file = path.join(script_dir, 'asign.json')
+    env_name = 'ydyp_ck'
+    token = os.getenv(env_name)
     
-    try:
-        with open(asign_file, 'r', encoding='utf-8') as f:
-            asign_data = json.load(f)
-        
-        auth_list = [item['auth'] for item in asign_data.get('caiyun', [])]
-        
-        bark_key = asign_data.get('message', {}).get('bark', {}).get('key', '')
-        
-        if bark_key:
-            os.environ['BARK_KEY'] = bark_key
-            os.environ['BARK_ICON'] = BARK_ICON
-            os.environ['BARK_GROUP'] = BARK_GROUP
-        
-        ck_env = os.environ.get("ydyp_ck", "")
-        if not ck_env:
-            print("未获取到环境变量 ydyp_ck")
-            exit(0)
+    if not token:
+        print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
+        exit(0)
 
-        ck_list = ck_env.split("@")
-
-        cookies = []
-        for ck in ck_list:
-            try:
-                if "#" in ck:
-                    cookies.append(ck)
-                else:
-                    cookies.append(f"{ck}#13800138000#00")
-            except Exception as e:
-                print(f"解析账号失败: {e}")
-                continue
-        
-        print(f"移动云盘共获取到{len(cookies)}个账号")
+    cookies = re.split(r'[@\n]', token)
+    print(f"移动云盘共获取到{len(cookies)}个账号")
 
     for i, account_info in enumerate(cookies, start = 1):
         print(f"\n======== ▷ 第 {i} 个账号 ◁ ========")
@@ -891,7 +897,6 @@ if __name__ == "__main__":
     
     send = load_send()
 
-    # 判断是否推送
     if PUSH_SWITCH == '1':
         if send:
             if err_accounts:
