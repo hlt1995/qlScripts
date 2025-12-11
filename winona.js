@@ -66,6 +66,28 @@ class WnnTask {
             Connection: "keep-alive"
         };
         this.hasCriticalError = false;
+        this.errorMessages = []; // 存储错误信息
+    }
+
+    // 记录错误信息
+    recordError(errorType, message) {
+        const fullMessage = `❌ ${this.remark} ${errorType}: ${message}`;
+        this.errorMessages.push(fullMessage);
+        console.log(fullMessage);
+    }
+
+    // 汇总并发送错误通知
+    async sendErrorsIfAny() {
+        if (this.errorMessages.length > 0) {
+            // 如果有致命错误，优先发送
+            if (this.hasCriticalError) {
+                addNotifyMessage(this.errorMessages[0]);
+            } else {
+                // 非致命错误合并发送
+                const summary = `${this.remark} 执行过程中出现以下问题：\n${this.errorMessages.join('\n')}`;
+                addNotifyMessage(summary);
+            }
+        }
     }
 
     async checkin() {
@@ -86,22 +108,16 @@ class WnnTask {
                     log("✅ 签到成功！");
                     break;
                 case 600:
-                    const tokenErrorMsg = `❌ ${this.remark} Token 失效，请重新获取！`;
-                    log(tokenErrorMsg);
-                    addNotifyMessage(tokenErrorMsg);
+                    this.recordError("Token 失效", "请重新获取！");
                     this.hasCriticalError = true;
                     return false;
                 default:
-                    const signErrorMsg = `❌ ${this.remark} 签到失败: ${JSON.stringify(response.data)}`;
-                    log(signErrorMsg);
-                    addNotifyMessage(signErrorMsg);
+                    this.recordError("签到失败", JSON.stringify(response.data));
                     this.hasCriticalError = true;
                     return false;
             }
         } catch (error) {
-            const requestErrorMsg = `❌ ${this.remark} 签到请求异常: ${error.message}`;
-            log(requestErrorMsg);
-            addNotifyMessage(requestErrorMsg);
+            this.recordError("签到请求异常", error.message);
             this.hasCriticalError = true;
             return false;
         }
@@ -119,10 +135,10 @@ class WnnTask {
             if (response.data.code === 200) {
                 log(`🌳 树木签到成功，获得 ${response.data.data.waterGram}g 水滴`);
             } else {
-                log(`❌ 树木签到失败: ${JSON.stringify(response.data)}`);
+                this.recordError("树木签到失败", JSON.stringify(response.data));
             }
         } catch (error) {
-            log(`❌ 树木签到请求异常: ${error.message}`);
+            this.recordError("树木签到请求异常", error.message);
         }
     }
 
@@ -134,7 +150,7 @@ class WnnTask {
                 { headers: this.headers }
             );
         } catch (error) {
-            // 静默处理异常
+            // 静默处理异常，不记录错误
         }
     }
 
@@ -149,10 +165,10 @@ class WnnTask {
             if (response.data.code === 200) {
                 log("✅ 浏览商城任务完成！");
             } else {
-                log(`❌ 浏览商城失败: ${JSON.stringify(response.data)}`);
+                this.recordError("浏览商城失败", JSON.stringify(response.data));
             }
         } catch (error) {
-            log(`❌ 浏览商城请求异常: ${error.message}`);
+            this.recordError("浏览商城请求异常", error.message);
         }
     }
 
@@ -169,10 +185,10 @@ class WnnTask {
             } else if (response.data.code === 703) {
                 log("⚠️ 请勿频繁操作！");
             } else {
-                log(`❌ 阅读文章失败: ${JSON.stringify(response.data)}`);
+                this.recordError("阅读文章失败", JSON.stringify(response.data));
             }
         } catch (error) {
-            log(`❌ 阅读文章请求异常: ${error.message}`);
+            this.recordError("阅读文章请求异常", error.message);
         }
     }
 
@@ -189,10 +205,10 @@ class WnnTask {
                 log(`💧 当前水滴数量: ${waterDrops}g`);
                 return waterDrops;
             } else {
-                log(`❌ 获取水滴失败: ${JSON.stringify(response.data)}`);
+                this.recordError("获取水滴失败", JSON.stringify(response.data));
             }
         } catch (error) {
-            log(`❌ 获取水滴请求异常: ${error.message}`);
+            this.recordError("获取水滴请求异常", error.message);
         }
         return 0;
     }
@@ -208,6 +224,8 @@ class WnnTask {
 
         log(`🌿 计划浇水 ${waterTimes} 次...`);
 
+        let waterErrors = [];
+        
         for (let i = 1; i <= waterTimes; i++) {
             try {
                 const response = await axios.post(
@@ -219,17 +237,26 @@ class WnnTask {
                 if (response.data.code === 200) {
                     log(`✅ 第 ${i} 次浇水成功！`);
                 } else {
-                    log(`❌ 浇水失败: ${JSON.stringify(response.data)}`);
+                    waterErrors.push(`第 ${i} 次浇水失败: ${JSON.stringify(response.data)}`);
                 }
             } catch (error) {
-                log(`❌ 浇水请求异常: ${error.message}`);
+                waterErrors.push(`第 ${i} 次浇水请求异常: ${error.message}`);
             }
             await delay();
+        }
+        
+        // 汇总浇水错误
+        if (waterErrors.length > 0) {
+            this.recordError("浇水过程中出现错误", `共 ${waterErrors.length} 次失败\n${waterErrors.slice(0, 3).join('\n')}${waterErrors.length > 3 ? '\n...等' : ''}`);
         }
     }
 
     async run(shareCode) {
-        if (!(await this.checkin())) return;
+        if (!(await this.checkin())) {
+            // 如果有致命错误，立即记录并返回
+            await this.sendErrorsIfAny();
+            return;
+        }
         
         await delay();
         await this.treeCheckin();
@@ -241,6 +268,9 @@ class WnnTask {
         await this.readArticle();
         await delay();
         await this.waterTree();
+        
+        // 执行完成后发送错误汇总
+        await this.sendErrorsIfAny();
     }
 }
 
