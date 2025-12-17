@@ -2,9 +2,9 @@
 # 功能描述: [签到 基础任务 果园 云朵大作战]
 # 使用说明:
 #   - [抓包 Cookie：任意Authorization]
-#   - [例: Basic cGMxxxxgzt@cGMxxxxgzra]
+#   - [例: Basic cGMxxxxgzt@Basic cGMxxxxgzra]
 # 环境变量设置:
-#   - ydyp_ck
+#   - [ydyp_ck]
 
 # 注: 本脚本仅用于个人学习和交流，请勿用于非法用途。作者不承担由于滥用此脚本所引起的任何责任，请在下载后24小时内删除。
 
