@@ -69,17 +69,6 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 >CK格式：`手机号#appToken#device` `@`
 
 
-### ✈️ 同程旅行-飞儿萌养成计划
-
-- `tclx_sysign.py` &emsp;环境变量：`tclx`
-
->手机开启抓包软件，复制 `#小程序://同程旅行/cKtGyU58WAvoyGF` 到微信打开
-
->搜索 `https://cvg.17usoft.com` 任意请求体中的 `idenId`
-
->CK格式：`idenId`
-
-
 ### 🧴 薇诺娜小薇森林
 
 - `winona.js` &emsp;环境变量：`wnn_ck`
