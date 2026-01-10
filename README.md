@@ -4,7 +4,7 @@
 ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 ```
 
-* 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行 [部署教程参考](https://cloud.189.cn/web/share?code=U36RferiMvIf（访问码：2io3）)
+* 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行
 ---
 
 ## 📝 脚本说明
