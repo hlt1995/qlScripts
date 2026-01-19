@@ -4,7 +4,6 @@
 ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 ```
 
-* 脚本基于Android手机+ZeroTermux+Alpine部署青龙面板运行
 ---
 
 ## 📝 脚本说明
@@ -110,73 +109,4 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 ---
 
 
-## 🗒️ 青龙面板升级以及依赖安装
-
-恢复包解压完成切换容器后，输入`startalpine`进入Alpine，执行
-```
-cd /ql
-ql update
-```
-
-面板升级完成后，执行安装NodeJS依赖
-```
-cd /ql/data/scripts
-pnpm add axios ds moment node-rsa xmldom jsdom@26.1.0 sharp@0.32.0
-```
-
-执行安装Python3依赖
-```
-pip3 install requests httpx pycryptodome
-```
----
-
-## 📒 jdpro库配置sendNotify.js
-
-青龙脚本订阅拉库会默认创建内置sendNotify.js覆盖jdpro库中的sendNotify.js,因此拉库前需要手动替换/ql/data/deps下的sendNotify.js
-
-下载sendNotify.js放在手机存储根目录后，Alpine下执行：
-```
-cp -f /sdcard/sendNotify.js /ql/data/deps/sendNotify.js
-```
-
----
-
-## 🚀 自动执行青龙面板启动命令
-
-为了避免手机意外重启导致青龙面板离线，可利用`MacroDroid`APP开机启动ZeroTermux，并在ZeroTermux中添加自动启动青龙面板命令
-
-进入 Zerotermux，执行：
-```
-nano ~/.bashrc
-```
-在文件中加入以下命令
-
-```
-startalpine
-```
-
-进入Alpine，首先安装nano编辑器
-
-```
-apk update
-apk add nano
-```
-
-安装完成后，执行：
-```
-nano ~/.profile
-```
-
-在文件中加入以下逻辑
-```
-# 青龙面板自启动逻辑
-if pgrep -f "app.js" > /dev/null 2>&1; then
-  echo -e "\033[1;32m✔ [QL-PANEL] 青龙面板正在运行\033[0m"
-else
-  echo -e "\033[1;33m⚡ [QL-PANEL] 青龙面板未运行，正在启动...\033[0m"
-  qinglong
-fi
-```
-
----
 #### 部分脚本来自网络，如有侵权，请联系删除！
