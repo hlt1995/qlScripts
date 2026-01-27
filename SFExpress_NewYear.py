@@ -5,6 +5,8 @@ Version: 2.0.0
 Date: 2026-01-26
 活动代码: YEAREND_2025
 """
+# cron: 0 12 * * *
+# const $ = new Env('顺丰速运新年活动')
 
 import hashlib
 import json
