@@ -46,9 +46,9 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 >CK格式：`整段Cookie`
 
 
-### 📦️ 顺丰速运每日任务
+### 📦️ 顺丰速运
 
-- `SFExpress.py` &emsp;环境变量：`sfsyUrl`
+- `SFExpress.py` `SFExpress_NewYear.py` &emsp;环境变量：`sfsyUrl`
 
 >手机开启抓包软件，进入微信 -> 小程序(顺丰速运) -> 我的 -> 积分
 
@@ -57,7 +57,7 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 >CK格式：`编码后的url` `&`
 
 
-### ✈️ 同程旅行每日签到
+### ✈️ 同程旅行
 
 - `TongchengTravel.py` &emsp;环境变量：`tc_cookie`
 
