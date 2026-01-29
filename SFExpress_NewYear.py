@@ -1,12 +1,19 @@
 """
 顺丰速运新年活动脚本
+# cron: 0 12 * * *
+# const $ = new Env('顺丰速运新年活动')
 Author: 爱学习的呆子
 Version: 2.0.0
 Date: 2026-01-26
 活动代码: YEAREND_2025
+配置说明:
+- ENABLE_INTEGRAL_EXCHANGE: 积分兑换开关，True=启用积分兑换冲刺次数，False=禁用    #脚本55行 默认为False
+- ENABLE_LOTTERY_DRAW: 轮次抽奖开关，True=启用向前冲游戏后自动轮次抽奖，False=禁用    #脚本56行  默认为False
+- SF_PROXY_API_URL: 代理API地址，为空则不使用代理    #脚本57行
+
+推荐微信扫码网站：
+- sm.linzixuan.work
 """
-# cron: 0 12 * * *
-# const $ = new Env('顺丰速运新年活动')
 
 import hashlib
 import json
@@ -21,7 +28,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 PROXY_TIMEOUT = 15
@@ -43,7 +49,7 @@ print_lock = Lock()
 class Config:
     """全局配置"""
     APP_NAME: str = "顺丰速运新年活动"
-    VERSION: str = "2.0.0"
+    VERSION: str = "1.0.2"
     ENV_NAME: str = "sfsyUrl"
     PROXY_API_URL: str = os.getenv('SF_PROXY_API_URL', '')
     ACTIVITY_CODE: str = "YEAREND_2025"
@@ -51,7 +57,8 @@ class Config:
     TOKEN: str = 'wwesldfs29aniversaryvdld29'
     SYS_CODE: str = 'MCS-MIMP-CORE'
     
-    ENABLE_INTEGRAL_EXCHANGE: bool = True
+    ENABLE_INTEGRAL_EXCHANGE: bool = False   #积分兑换开关
+    ENABLE_LOTTERY_DRAW: bool = False      #轮次抽奖开关
 
 
 class Logger:
@@ -285,7 +292,8 @@ class SFHttpClient:
     
     def login(self, url: str, timeout: int = PROXY_TIMEOUT) -> tuple[bool, str, str]:
         try:
-            decoded_url = unquote(url)
+            decoded_url = unquote(url)    #适合编码后的url跑  也就是插件提交上来 用&分割的
+            #decoded_url = url            #适合未编码的url跑  也就是正常的URL  手动抓的那种  用\n换行分割  需修改1002行的&分割为\n
             self.session.get(decoded_url, headers=self.headers, timeout=timeout)
             
             cookies = self.session.cookies.get_dict()
@@ -445,9 +453,8 @@ class NewYearActivity:
     
     def receive_task_reward(self, task_code: str, task_name: str) -> bool:
         """领取任务奖励"""
-        url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~activityTaskService~receiveTaskToken'
+        url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonRoutePost/memberEs/taskRecord/finishTask'
         data = {
-            "activityCode": self.config.ACTIVITY_CODE,
             "taskCode": task_code
         }
         
@@ -606,7 +613,7 @@ class NewYearActivity:
         
         url_win = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~yearEnd2025GameService~win'
         
-        for i in range(start_level, total_levels):
+        for i in range(start_level, total_levels+1):
             self.logger.info(f'正在闯关第 {i} 关...')
             data = {"levelIndex": i}
             response = self.http.request(url_win, data=data)
@@ -717,6 +724,75 @@ class NewYearActivity:
             self.logger.warning(f'积分兑换失败: {error_msg}')
             return False
     
+    def check_lottery_status(self) -> tuple[bool, str, int]:
+        """检查轮次抽奖状态
+        
+        Returns:
+            tuple[bool, str, int]: (是否可以抽奖, 当前轮次, 剩余抽奖次数)
+        """
+        url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~yearEnd2025ForwardService~forwardStatus'
+        data = {}
+        
+        response = self.http.request(url, data=data)
+        if response and response.get('success'):
+            obj = response.get('obj', {})
+            current_level = obj.get('currentLevel', '')
+            level_list = obj.get('levelList', [])
+            
+            for level in level_list:
+                currency = level.get('currency', '')
+                if currency == current_level:
+                    balance = level.get('balance', 0)
+                    total_amount = level.get('totalAmount', 0)
+                    
+                    if balance > 0:
+                        self.logger.info(f'🎰 当前轮次: {current_level}, 可抽奖次数: {balance}/{total_amount}')
+                        return True, current_level, balance
+                    else:
+                        self.logger.info(f'🎰 当前轮次: {current_level}, 本轮次抽奖次数已用完')
+                        return False, current_level, 0
+            
+            self.logger.info(f'🎰 当前轮次: {current_level}, 未找到对应轮次信息')
+            return False, current_level, 0
+        else:
+            error_msg = response.get('errorMessage', '未知错误') if response else '请求失败'
+            self.logger.warning(f'查询轮次抽奖状态失败: {error_msg}')
+            return False, '', 0
+    
+    def do_lottery_draw(self, currency: str) -> bool:
+        """执行轮次抽奖
+        
+        Args:
+            currency: 轮次标识（如 LU, FU, HAPPY, LUCKY, RAISE）
+            
+        Returns:
+            bool: 是否抽奖成功
+        """
+        url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~yearEnd2025LotteryService~prizeDraw'
+        data = {"currency": currency}
+        
+        response = self.http.request(url, data=data)
+        if response and response.get('success'):
+            obj = response.get('obj', {})
+            gift_bag_name = obj.get('giftBagName', '未知奖励')
+            gift_bag_worth = obj.get('giftBagWorth', 0)
+            product_list = obj.get('productDTOList', [])
+            
+            reward_details = []
+            for product in product_list:
+                product_name = product.get('productName', '')
+                amount = product.get('amount', 0)
+                if product_name:
+                    reward_details.append(f'{product_name} x{amount}')
+            
+            reward_text = ', '.join(reward_details) if reward_details else f'{gift_bag_name} (价值{gift_bag_worth}元)'
+            self.logger.success(f'🎁 轮次抽奖成功！获得: {reward_text}')
+            return True
+        else:
+            error_msg = response.get('errorMessage', '未知错误') if response else '请求失败'
+            self.logger.warning(f'轮次抽奖失败: {error_msg}')
+            return False
+    
     def do_forward_game(self) -> int:
         """执行所有向前冲游戏次数"""
         self.logger.info('开始执行向前冲游戏...')
@@ -750,6 +826,17 @@ class NewYearActivity:
         
         if played_count > 0:
             self.logger.success(f'向前冲游戏完成，共进行 {played_count} 次')
+        
+        if self.config.ENABLE_LOTTERY_DRAW:
+            time.sleep(1)
+            can_lottery, current_level, lottery_balance = self.check_lottery_status()
+            if can_lottery and lottery_balance > 0:
+                self.logger.info(f'检测到可进行轮次抽奖，开始抽奖...')
+                for i in range(lottery_balance):
+                    if self.do_lottery_draw(current_level):
+                        time.sleep(1)
+                    else:
+                        break
         
         return played_count
     
@@ -928,6 +1015,7 @@ def main():
     print(f"📱 共获取到 {len(account_urls)} 个账号")
     print(f"⚙️ 并发数量: {CONCURRENT_NUM}")
     print(f"💎 积分兑换: {'✅ 已启用' if config.ENABLE_INTEGRAL_EXCHANGE else '❌ 已禁用'}")
+    print(f"🎰 轮次抽奖: {'✅ 已启用' if config.ENABLE_LOTTERY_DRAW else '❌ 已禁用'}")
     print(f"⏰ 执行时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 50)
     
