@@ -48,7 +48,7 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 
 ### 📦️ 顺丰速运
 
-- `SFExpress.py` `SFExpress_NewYear.py` &emsp;环境变量：`sfsyUrl`
+- `SFExpress.py` `SFExpress_NewYear.py` `SFExpress_Lottery.py` &emsp;环境变量：`sfsyUrl`
 
 >手机开启抓包软件，进入微信 -> 小程序(顺丰速运) -> 我的 -> 积分
 
