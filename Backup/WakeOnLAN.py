@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # const $ = new Env('网络唤醒')
 """
-Wake-on-LAN 网络唤醒
+Wake-on-LAN 网络唤醒 支持多网络多设备唤醒
 
 变量示例
 局域网单设备唤醒：
