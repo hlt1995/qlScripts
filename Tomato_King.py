@@ -6,8 +6,9 @@ import re
 import random
 from collections import defaultdict
 
-
-# TYQH格式: wid#wm_phone&wid#wm_phone...
+# cron: 25 12 * * *
+# const $ = new Env('统一茄皇')
+# QH格式: wid#wm_phone&wid#wm_phone...
 users = os.getenv("QH", "").split("&")
 users = [user.strip() for user in users if user.strip()]
 
