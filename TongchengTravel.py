@@ -1,5 +1,5 @@
 # -*- coding=UTF-8 -*-
-# cron: 35 12 * * *
+# cron: 5 12 * * *
 # const $ = new Env('同程旅行')
 """
 开启抓包，进入app 进入'领福利'界面，点击签到，查看https://app.17u.cn/welfarecenter/index/signIndex请求头
