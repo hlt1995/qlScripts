@@ -90,7 +90,7 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 
 - `Nestle.js` &emsp;环境变量：`NESTLE_TOKEN`
 
->手机开启抓包软件，复制 `#小程序://雀巢会员/O0NOfAHwAGV3tZb` 到微信打开
+>手机开启抓包软件，进入微信 -> 小程序(雀巢会员)
 
 >搜索 `https://crm.nestlechinese.com/openapi/activityservice/api` 的任意请求头中的 `Authorization`
 
