@@ -52,7 +52,10 @@ class WOLWakeOnLan:
                     # print(f"📡 已发送第 {i}/{self.repeat} 个幻数据包 → {self.broadcast_address}:{self.port}")
                     if i < self.repeat:
                         time.sleep(self.interval)
-            print(f"✅ 发送幻数据包成功，目标 MAC: {mac_address}")
+            print(f"📍 目标 MAC: {mac_address}")
+            print(f"📡 广播地址: {self.broadcast_address}:{self.port}")
+            print(f"✅ 幻数据包已发送！")
+            # print(f"✅ 发送幻数据包成功，目标 MAC: {mac_address}")
             return True
         except Exception as e:
             print(f"❌ 发送幻数据包失败: {e}")
@@ -92,7 +95,7 @@ def main():
         repeat=args.repeat,
         interval=args.interval
     )
-
+    print(f"🖥️ 正在唤醒设备...\n")
     success = wol.wake_up(mac_address, args.interface)
     sys.exit(0 if success else 1)
 
