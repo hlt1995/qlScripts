@@ -28,18 +28,18 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 
 ### ☁️ 移动云盘
 
-- `mcloud.py` &emsp;环境变量：`ydyp_ck`
+- `mcloud.py` &emsp;环境变量：`ydyp`
 
 >浏览器登录 [https://yun.139.com/](https://yun.139.com/) ,抓取cookie中的Authorization的值
 
->CK格式：`Authorization` `@`
+>CK格式：`Authorization#手机号` `&`
 
 
 ### 📦️ 顺丰速运
 
 - `SFExpress.py` `SFExpress_Year.py` `SFExpress_Lottery.py` &emsp;环境变量：`sfsyUrl`
 
->[扫码登录获取CK](https://sm.9999.blue/)
+>[扫码登录获取CK](https://sm.linzixuan.top/)
 
 >CK格式：`sessionId=ABC;_login_mobile_=123;_login_user_id_=DEF` `&`
 
