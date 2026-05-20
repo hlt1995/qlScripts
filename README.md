@@ -37,7 +37,7 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 
 ### 📦️ 顺丰速运
 
-- `SFExpress.py` `SFExpress_Year.py` `SFExpress_Lottery.py` &emsp;环境变量：`sfsyUrl`
+- `SFExpress.py` &emsp;环境变量：`sfsyUrl`
 
 >[扫码登录获取CK](https://sm.linzixuan.top/)
 
@@ -92,14 +92,6 @@ ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 
 >局域网唤醒只需填写`WOL_MAC`，外网唤醒填写`WOL_MAC` `WOL_IP`，端口默认9
 
-
-### 🍅 统一茄皇
-
-- `Tomato_King.py` &emsp;环境变量：`QH`
-
->无需抓包，进入微信 -> 小程序(统一梦时代) -> 个人中心头像 -> 客户编号
-
->CK格式：`客户编号#手机号` `&`
 
 ---
 
