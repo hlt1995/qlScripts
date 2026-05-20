@@ -4,8 +4,8 @@
 """
 顺丰速运日常积分任务
 Author: 爱学习的呆子
-Version: 1.2.0
-Date: 2026-03-17
+Version: 1.3.0
+Date: 2026-04-04
 """
 
 import hashlib
@@ -68,7 +68,7 @@ class Config:
     PROXY_API_URL: str = os.getenv('SF_PROXY_API_URL', '')
     
     # 代理相关配置常量
-    PROXY_TIMEOUT = 15  # 代理超时时间（秒）
+    PROXY_TIMEOUT = 15  # 代理时间（秒）
     MAX_PROXY_RETRIES = 5  # 最大代理重试次数
     REQUEST_RETRY_COUNT = 3  # 请求重试次数
     
@@ -592,11 +592,11 @@ class TaskExecutor:
             # 恢复原有的platform头
             self.http.headers['platform'] = original_platform
     
-    def sign_in(self) -> tuple[bool, int, str, str]:
+    def sign_in(self) -> tuple[bool, str]:
         """小程序每日签到
         
         Returns:
-            tuple: (是否成功, countDay, packetName, 错误信息)
+            tuple[bool, str]: (是否成功, 错误信息)
         """
         url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralTaskSignPlusService~automaticSignFetchPackage'
         data = {"comeFrom": "vioin", "channelFrom": "WEIXIN"}
@@ -605,13 +605,56 @@ class TaskExecutor:
         if response and response.get('success'):
             count_day = response.get('obj', {}).get('countDay', 0)
             packet_list = response.get('obj', {}).get('integralTaskSignPackageVOList', [])
-            packet_name = packet_list[0].get('packetName', '') if packet_list else ''
-            self.logger.success(f'签到成功，获得【{packet_name}】，本周累计签到【{count_day + 1}】天')
-            return True, count_day, packet_name, ''
+            
+            if packet_list:
+                packet_name = packet_list[0].get('packetName', '未知奖励')
+                self.logger.success(f'签到成功，获得【{packet_name}】，本周累计签到【{count_day + 1}】天')
+            else:
+                self.logger.info(f'今日已签到，本周累计签到【{count_day + 1}】天')
+            return True, ''
         else:
             error_msg = response.get('errorMessage', '未知错误') if response else '请求失败'
             self.logger.error(f'签到失败: {error_msg}')
-            return False, 0, '', error_msg
+            return False, error_msg
+    
+    def new_sign_in(self) -> tuple[bool, str]:
+        """新签到（integralSignV2Service）
+        
+        Returns:
+            tuple[bool, str]: (是否成功, 错误信息)
+        """
+        url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralSignV2Service~sign'
+        data = {}
+        
+        original_platform = self.http.headers.get('platform', 'MINI_PROGRAM')
+        self.http.headers['platform'] = 'SFAPP'
+        
+        try:
+            response = self.http.request(url, data=data)
+            if response and response.get('success'):
+                obj = response.get('obj', {})
+                signed = obj.get('signed', False)
+                day_count = obj.get('dayCount', 0)
+                total_count = obj.get('totalCount', 0)
+                award = obj.get('award', {})
+                award_type = obj.get('awardType', '')
+                award_num = obj.get('awardNum', 0)
+                
+                if signed and award:
+                    gift_bag_name = award.get('giftBagName', '未知奖励')
+                    self.logger.success(f'[新签到] 签到成功，连续第{day_count}天，获得【{gift_bag_name}】')
+                elif signed:
+                    self.logger.info(f'[新签到] 今日已签到，连续第{day_count}天')
+                else:
+                    self.logger.info(f'[新签到] 签到完成')
+                
+                return True, ''
+            else:
+                error_msg = response.get('errorMessage', '未知错误') if response else '请求失败'
+                self.logger.error(f'[新签到] 失败: {error_msg}')
+                return False, error_msg
+        finally:
+            self.http.headers['platform'] = original_platform
     
     def get_task_list(self) -> List[Dict]:
         """获取任务列表"""
@@ -962,10 +1005,7 @@ class AccountManager:
                 'phone': '',
                 'points_before': 0,
                 'points_after': 0,
-                'points_earned': 0,
-                'sign_success': False,
-                'countDay': 0,
-                'sign_error': '登录失败'
+                'points_earned': 0
             }
         
         # 随机延迟
@@ -979,11 +1019,15 @@ class AccountManager:
         app_sign_success, app_error_msg = executor.app_sign_in()
         time.sleep(1)
         
+        # 执行新签到
+        new_sign_success, new_sign_error = executor.new_sign_in()
+        time.sleep(1)
+        
         # 再执行小程序签到
-        sign_success, count_day, packet_name, sign_error = executor.sign_in()
+        sign_success, error_msg = executor.sign_in()
         
         # 如果签到失败且错误信息包含“活动太火爆”，尝试重新登录
-        if not sign_success and '活动太火爆' in sign_error:
+        if not sign_success and '活动太火爆' in error_msg:
             max_retries = 3
             for retry in range(max_retries):
                 self.logger.warning(f'签到失败（代理IP问题），{2}秒后重新获取代理并重试（第{retry + 1}次）...')
@@ -1002,12 +1046,12 @@ class AccountManager:
                         executor.user_id = self.user_id
                         
                         # 重试签到
-                        sign_success, count_day, packet_name, sign_error = executor.sign_in()
+                        sign_success, error_msg = executor.sign_in()
                         
                         if sign_success:
                             self.logger.success('重新登录后签到成功')
                             break
-                        elif '活动太火爆' not in sign_error:
+                        elif '活动太火爆' not in error_msg:
                             # 如果不是代理问题，则不再重试
                             break
                     else:
@@ -1027,10 +1071,7 @@ class AccountManager:
             'phone': self.phone,
             'points_before': points_before,
             'points_after': points_after,
-            'points_earned': points_earned,
-            'sign_success': sign_success,
-            'countDay': count_day,
-            'sign_error': sign_error
+            'points_earned': points_earned
         }
 
 
@@ -1074,9 +1115,7 @@ def run_single_account(account_info: str, index: int, config: Config) -> Dict[st
             'points_before': 0,
             'points_after': 0,
             'points_earned': 0,
-            'sign_success': False,
-            'countDay': 0,
-            'sign_error': error_msg
+            'error': error_msg
         }
 
 
