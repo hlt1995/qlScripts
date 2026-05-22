@@ -513,146 +513,91 @@ class TaskExecutor:
                 self.taskCode = extracted_task_id
                 self.logger.info(f'从buttonRedirect中提取到taskId: {self.taskCode}')
     
-    def app_sign_in(self) -> tuple[bool, str]:
-        """APP每日签到（使用getUnFetchPointAndDiscount接口触发签到+领取）
-        
-        Returns:
-            tuple[bool, str]: (是否成功, 错误信息)
-        """
+    def app_sign_in(self) -> Dict:
         url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralTaskSignPlusService~getUnFetchPointAndDiscount'
         data = {}
-        
-        # 保存原有的platform头
         original_platform = self.http.headers.get('platform', 'MINI_PROGRAM')
-        
-        # 临时切换为APP平台
         self.http.headers['platform'] = 'SFAPP'
-        
+        result = {'channel': 'APP签到', 'success': False, 'message': '', 'award': ''}
         try:
             response = self.http.request(url, data=data)
             if response and response.get('success'):
                 obj = response.get('obj', [])
-                
-                # 响应是一个数组，包含待领取的奖励
                 if obj and isinstance(obj, list) and len(obj) > 0:
-                    total_points = 0
-                    reward_names = []
-                    for item in obj:
-                        packet_name = item.get('packetName', '未知奖励')
-                        detail_value = item.get('detailValue', '0')
-                        reward_names.append(packet_name)
-                        try:
-                            total_points += int(detail_value)
-                        except:
-                            pass
-                    
-                    self.logger.success(f'[APP签到] 签到成功，获得【{", ".join(reward_names)}】')
+                    award_names = [item.get('packetName','') for item in obj]
+                    result['success'] = True
+                    result['award'] = '、'.join(award_names)
+                    result['message'] = f"获得 {result['award']}"
                 else:
-                    self.logger.info(f'[APP签到] 今日已签到或无可领取奖励')
-                
-                return True, ''
-            else:
-                error_msg = response.get('errorMessage', '未知错误') if response else '请求失败'
-                
-                # 如果返回"没有待领取礼包"，等待1秒后再次调用接口
-                if '没有待领取礼包' in error_msg:
-                    self.logger.info(f'[APP签到] 检测到需要二次领取，等待1秒后重试...')
+                    # 尝试二次领取
                     time.sleep(1)
-                    
-                    # 再次调用getUnFetchPointAndDiscount接口
                     response2 = self.http.request(url, data=data)
                     if response2 and response2.get('success'):
                         obj2 = response2.get('obj', [])
-                        
                         if obj2 and isinstance(obj2, list) and len(obj2) > 0:
-                            total_points = 0
-                            reward_names = []
-                            for item in obj2:
-                                packet_name = item.get('packetName', '未知奖励')
-                                detail_value = item.get('detailValue', '0')
-                                reward_names.append(packet_name)
-                                try:
-                                    total_points += int(detail_value)
-                                except:
-                                    pass
-                            
-                            self.logger.success(f'[APP签到] 二次领取成功，获得【{", ".join(reward_names)}】')
+                            award_names2 = [item.get('packetName','') for item in obj2]
+                            result['success'] = True
+                            result['award'] = '、'.join(award_names2)
+                            result['message'] = f"二次领取成功，获得 {result['award']}"
                         else:
-                            self.logger.info(f'[APP签到] 二次领取完成，但无可领取奖励')
-                        
-                        return True, ''
+                            result['success'] = True
+                            result['message'] = '今日已签到，无待领取奖励'
                     else:
-                        error_msg2 = response2.get('errorMessage', '未知错误') if response2 else '请求失败'
-                        self.logger.error(f'[APP签到] 二次领取失败: {error_msg2}')
-                        return False, error_msg2
-                else:
-                    self.logger.error(f'[APP签到] 失败: {error_msg}')
-                    return False, error_msg
+                        result['message'] = f"失败: {response2.get('errorMessage','') if response2 else '无响应'}"
+                return result
+            else:
+                result['message'] = f"失败: {response.get('errorMessage','') if response else '无响应'}"
+                return result
         finally:
-            # 恢复原有的platform头
             self.http.headers['platform'] = original_platform
     
-    def sign_in(self) -> tuple[bool, str]:
-        """小程序每日签到
-        
-        Returns:
-            tuple[bool, str]: (是否成功, 错误信息)
-        """
+    def sign_in(self) -> Dict:
         url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralTaskSignPlusService~automaticSignFetchPackage'
         data = {"comeFrom": "vioin", "channelFrom": "WEIXIN"}
-        
+        result = {'channel': '小程序签到', 'success': False, 'message': '', 'week_day': 0}
         response = self.http.request(url, data=data)
         if response and response.get('success'):
             count_day = response.get('obj', {}).get('countDay', 0)
             packet_list = response.get('obj', {}).get('integralTaskSignPackageVOList', [])
-            
+            week_day = count_day + 1
+            result['week_day'] = week_day
             if packet_list:
-                packet_name = packet_list[0].get('packetName', '未知奖励')
-                self.logger.success(f'签到成功，获得【{packet_name}】，本周累计签到【{count_day + 1}】天')
+                packet_name = packet_list[0].get('packetName', '未知')
+                result['success'] = True
+                result['message'] = f"签到成功，获得【{packet_name}】，本周累计签到{week_day}天"
             else:
-                self.logger.info(f'今日已签到，本周累计签到【{count_day + 1}】天')
-            return True, ''
+                result['success'] = True
+                result['message'] = f"今日已签到，本周累计签到{week_day}天"
         else:
             error_msg = response.get('errorMessage', '未知错误') if response else '请求失败'
-            self.logger.error(f'签到失败: {error_msg}')
-            return False, error_msg
+            result['message'] = f"签到失败: {error_msg}"
+        return result
     
-    def new_sign_in(self) -> tuple[bool, str]:
-        """新签到（integralSignV2Service）
-        
-        Returns:
-            tuple[bool, str]: (是否成功, 错误信息)
-        """
+    def new_sign_in(self) -> Dict:
         url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralSignV2Service~sign'
         data = {}
-        
         original_platform = self.http.headers.get('platform', 'MINI_PROGRAM')
         self.http.headers['platform'] = 'SFAPP'
-        
+        result = {'channel': '新签到', 'success': False, 'message': '', 'detail': ''}
         try:
             response = self.http.request(url, data=data)
             if response and response.get('success'):
                 obj = response.get('obj', {})
                 signed = obj.get('signed', False)
                 day_count = obj.get('dayCount', 0)
-                total_count = obj.get('totalCount', 0)
-                award = obj.get('award', {})
-                award_type = obj.get('awardType', '')
-                award_num = obj.get('awardNum', 0)
-                
-                if signed and award:
-                    gift_bag_name = award.get('giftBagName', '未知奖励')
-                    self.logger.success(f'[新签到] 签到成功，连续第{day_count}天，获得【{gift_bag_name}】')
-                elif signed:
-                    self.logger.info(f'[新签到] 今日已签到，连续第{day_count}天')
+                if signed:
+                    award = obj.get('award', {})
+                    award_name = award.get('giftBagName', '')
+                    result['success'] = True
+                    result['message'] = f"签到成功，连续{day_count}天" + (f"，获得 {award_name}" if award_name else "")
+                    result['detail'] = f"day={day_count}, award={award_name}"
                 else:
-                    self.logger.info(f'[新签到] 签到完成')
-                
-                return True, ''
+                    result['success'] = True
+                    result['message'] = f"今日已签到，连续{day_count}天"
+                return result
             else:
-                error_msg = response.get('errorMessage', '未知错误') if response else '请求失败'
-                self.logger.error(f'[新签到] 失败: {error_msg}')
-                return False, error_msg
+                result['message'] = f"失败: {response.get('errorMessage','') if response else '无响应'}"
+                return result
         finally:
             self.http.headers['platform'] = original_platform
     
@@ -1015,43 +960,44 @@ class AccountManager:
         # 初始化任务执行器
         executor = TaskExecutor(self.http_client, self.logger, self.config, self.user_id)
         
-        # 先执行APP签到
-        app_sign_success, app_error_msg = executor.app_sign_in()
+        sign_results = []
+        app_sign_result = executor.app_sign_in()
+        sign_results.append(app_sign_result)
+        self.logger.info(f"[{app_sign_result['channel']}] {app_sign_result['message']}")
         time.sleep(1)
         
-        # 执行新签到
-        new_sign_success, new_sign_error = executor.new_sign_in()
+        new_sign_result = executor.new_sign_in()
+        sign_results.append(new_sign_result)
+        self.logger.info(f"[{new_sign_result['channel']}] {new_sign_result['message']}")
         time.sleep(1)
         
-        # 再执行小程序签到
-        sign_success, error_msg = executor.sign_in()
+        sign_result = executor.sign_in()
+        sign_results.append(sign_result)
+        self.logger.info(f"[{sign_result['channel']}] {sign_result['message']}")
         
-        # 如果签到失败且错误信息包含“活动太火爆”，尝试重新登录
-        if not sign_success and '活动太火爆' in error_msg:
+        # 如果小程序签到因代理问题失败，进行重试并更新 sign_results
+        if not sign_result['success'] and '活动太火爆' in sign_result['message']:
             max_retries = 3
             for retry in range(max_retries):
-                self.logger.warning(f'签到失败（代理IP问题），{2}秒后重新获取代理并重试（第{retry + 1}次）...')
+                self.logger.warning(f'小程序签到失败（代理IP问题），{2}秒后重新获取代理并重试（第{retry + 1}次）...')
                 time.sleep(2)
-                
                 try:
                     # 重新创建HTTP客户端（会自动获取新代理）
                     self.http_client = SFHttpClient(self.config, self.proxy_manager)
-                    
                     # 重新登录
                     success, self.user_id, self.phone = self.http_client.login(self.account_url)
-                    
                     if success:
                         # 更新执行器的HTTP客户端
                         executor.http = self.http_client
                         executor.user_id = self.user_id
-                        
-                        # 重试签到
-                        sign_success, error_msg = executor.sign_in()
-                        
-                        if sign_success:
-                            self.logger.success('重新登录后签到成功')
+                        # 重试小程序签到
+                        sign_result = executor.sign_in()
+                        sign_results[-1] = sign_result          # 更新列表中的最后一个元素
+                        self.logger.info(f"[{sign_result['channel']}] {sign_result['message']}")
+                        if sign_result['success']:
+                            self.logger.success('重新登录后小程序签到成功')
                             break
-                        elif '活动太火爆' not in error_msg:
+                        elif '活动太火爆' not in sign_result['message']:
                             # 如果不是代理问题，则不再重试
                             break
                     else:
@@ -1065,15 +1011,15 @@ class AccountManager:
         points_before, points_after = executor.run_all_tasks()
         points_earned = points_after - points_before
         
-        # 返回统计信息
+        # 返回统计信息（注意加入 sign_results）
         return {
             'success': True,
             'phone': self.phone,
             'points_before': points_before,
             'points_after': points_after,
-            'points_earned': points_earned
+            'points_earned': points_earned,
+            'sign_results': sign_results
         }
-
 
 # ==================== 单账号执行函数 ====================
 def run_single_account(account_info: str, index: int, config: Config) -> Dict[str, Any]:
@@ -1210,9 +1156,8 @@ def main():
     print("\n🎊 所有账号任务执行完成!")
     
     # ==================== Bark推送 ====================
+    # Bark推送
     if PUSH_SWITCH == "1" and BARK_PUSH:
-        
-        # 自动补全Bark地址（若只提供了Key）
         bark_url = BARK_PUSH
         if not bark_url.startswith('http://') and not bark_url.startswith('https://'):
             bark_url = 'https://api.day.app/' + bark_url
@@ -1225,22 +1170,21 @@ def main():
             masked_phone = phone[:3] + "****" + phone[7:] if phone and len(phone) == 11 else phone
             body += f"👤 账号{index}:【{masked_phone}】\n"
             if r.get('success'):
-                sign_success = r.get('sign_success', False)
-                if sign_success:
-                    count_day = r.get('countDay', 0)
-                    total_sign_day = count_day + 1
-                    body += f"✨ 签到成功，本周累计签到【{total_sign_day}】天\n"
-                else:
-                    sign_error = r.get('sign_error', '未知错误')
-                    body += f"⚠️ 签到失败：{sign_error}\n"
-                points_after = r.get('points_after', 0)
+                # 签到详情
+                sign_results = r.get('sign_results', [])
+                for sign in sign_results:
+                    channel = sign.get('channel', '签到')
+                    if sign.get('success'):
+                        body += f"✨ {channel}：{sign.get('message', '')}\n"
+                    else:
+                        body += f"⚠️ {channel}：{sign.get('message', '')}\n"
                 points_earned = r.get('points_earned', 0)
+                points_after = r.get('points_after', 0)
                 body += f"💰 当前积分：【{points_after}】（{'+' if points_earned>=0 else ''}{points_earned}）\n"
             else:
                 body += f"❌ 账号执行失败\n"
             body += "\n"
         
-        # 发送推送
         try:
             data = {
                 "title": title,
@@ -1250,7 +1194,7 @@ def main():
             }
             resp = requests.post(bark_url, json=data, timeout=10)
             if resp.status_code == 200:
-                print(f"✅ Bark推送成功")
+                print("✅ Bark推送成功")
             else:
                 print(f"⚠️ Bark推送失败，状态码: {resp.status_code}")
         except Exception as e:
