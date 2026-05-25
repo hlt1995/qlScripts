@@ -518,43 +518,82 @@ class TaskExecutor:
         data = {}
         original_platform = self.http.headers.get('platform', 'MINI_PROGRAM')
         self.http.headers['platform'] = 'SFAPP'
-        result = {'channel': 'APP签到', 'success': False, 'message': '', 'award': ''}
-        try:
-            response = self.http.request(url, data=data)
-            if response and response.get('success'):
-                obj = response.get('obj', [])
-                if obj and isinstance(obj, list) and len(obj) > 0:
-                    award_names = [item.get('packetName','') for item in obj]
-                    result['success'] = True
-                    result['award'] = '、'.join(award_names)
-                    result['message'] = f"获得 {result['award']}"
-                else:
-                    # 尝试二次领取
-                    time.sleep(1)
-                    response2 = self.http.request(url, data=data)
-                    if response2 and response2.get('success'):
-                        obj2 = response2.get('obj', [])
-                        if obj2 and isinstance(obj2, list) and len(obj2) > 0:
-                            award_names2 = [item.get('packetName','') for item in obj2]
-                            result['success'] = True
-                            result['award'] = '、'.join(award_names2)
-                            result['message'] = f"二次领取成功，获得 {result['award']}"
-                        else:
-                            result['success'] = True
-                            result['message'] = '今日已签到，无待领取奖励'
+        result = {'channel': 'APP签到', 'success': False, 'message': '', 'award': '', 'points': 0}
+        
+        max_attempts = 3
+        for attempt in range(max_attempts):
+            try:
+                response = self.http.request(url, data=data)
+                if response and response.get('success'):
+                    obj = response.get('obj', [])
+                    if obj and isinstance(obj, list) and len(obj) > 0:
+                        total_points = 0
+                        award_names = []
+                        for item in obj:
+                            pkt_name = item.get('packetName', '')
+                            point_str = item.get('detailValue', '0')
+                            award_names.append(pkt_name)
+                            try:
+                                total_points += int(point_str)
+                            except:
+                                pass
+                        result['success'] = True
+                        result['award'] = '、'.join(award_names)
+                        result['points'] = total_points
+                        result['message'] = f"获得 {result['award']}（{total_points}积分）"
+                        break
                     else:
-                        result['message'] = f"失败: {response2.get('errorMessage','') if response2 else '无响应'}"
-                return result
-            else:
-                result['message'] = f"失败: {response.get('errorMessage','') if response else '无响应'}"
-                return result
-        finally:
-            self.http.headers['platform'] = original_platform
+                        # 尝试二次领取
+                        time.sleep(1)
+                        response2 = self.http.request(url, data=data)
+                        if response2 and response2.get('success'):
+                            obj2 = response2.get('obj', [])
+                            if obj2 and isinstance(obj2, list) and len(obj2) > 0:
+                                total_points = 0
+                                award_names = []
+                                for item in obj2:
+                                    pkt_name = item.get('packetName', '')
+                                    point_str = item.get('detailValue', '0')
+                                    award_names.append(pkt_name)
+                                    try:
+                                        total_points += int(point_str)
+                                    except:
+                                        pass
+                                result['success'] = True
+                                result['award'] = '、'.join(award_names)
+                                result['points'] = total_points
+                                result['message'] = f"二次领取成功，获得 {result['award']}（{total_points}积分）"
+                                break
+                            else:
+                                result['success'] = True
+                                result['message'] = '今日已签到，无待领取奖励'
+                                result['points'] = 0
+                                # 未获得积分，继续重试
+                        else:
+                            result['message'] = f"失败: {response2.get('errorMessage','') if response2 else '无响应'}"
+                else:
+                    result['message'] = f"失败: {response.get('errorMessage','') if response else '无响应'}"
+                
+                # 未获得积分，重试
+                if attempt < max_attempts - 1:
+                    self.logger.warning(f'APP签到未获得积分，{2}秒后重试 ({attempt+1}/{max_attempts-1})')
+                    time.sleep(2)
+                else:
+                    self.logger.error(f'APP签到重试耗尽，最终结果: {result["message"]}')
+            except Exception as e:
+                result['message'] = f'异常: {str(e)}'
+                if attempt < max_attempts - 1:
+                    time.sleep(2)
+                else:
+                    self.logger.error(f'APP签到重试耗尽（异常）')
+            finally:
+                self.http.headers['platform'] = original_platform
+        return result
     
     def sign_in(self) -> Dict:
         url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberNonactivity~integralTaskSignPlusService~automaticSignFetchPackage'
         data = {"comeFrom": "vioin", "channelFrom": "WEIXIN"}
-        result = {'channel': '小程序签到', 'success': False, 'message': '', 'week_day': 0}
+        result = {'channel': '小程序签到', 'success': False, 'message': '', 'week_day': 0, 'points': 0}
         response = self.http.request(url, data=data)
         if response and response.get('success'):
             count_day = response.get('obj', {}).get('countDay', 0)
@@ -563,7 +602,13 @@ class TaskExecutor:
             result['week_day'] = week_day
             if packet_list:
                 packet_name = packet_list[0].get('packetName', '未知')
+                point_str = packet_list[0].get('detailValue', '0')
+                try:
+                    points = int(point_str)
+                except:
+                    points = 0
                 result['success'] = True
+                result['points'] = points
                 result['message'] = f"签到成功，获得【{packet_name}】，本周累计签到{week_day}天"
             else:
                 result['success'] = True
@@ -578,7 +623,7 @@ class TaskExecutor:
         data = {}
         original_platform = self.http.headers.get('platform', 'MINI_PROGRAM')
         self.http.headers['platform'] = 'SFAPP'
-        result = {'channel': '新签到', 'success': False, 'message': '', 'detail': ''}
+        result = {'channel': '新签到', 'success': False, 'message': '', 'detail': '', 'points': 0}
         try:
             response = self.http.request(url, data=data)
             if response and response.get('success'):
@@ -588,9 +633,15 @@ class TaskExecutor:
                 if signed:
                     award = obj.get('award', {})
                     award_name = award.get('giftBagName', '')
+                    points = obj.get('awardNum', 0) or award.get('awardNum', 0)
+                    try:
+                        points = int(points)
+                    except:
+                        points = 0
                     result['success'] = True
+                    result['points'] = points
                     result['message'] = f"签到成功，连续{day_count}天" + (f"，获得 {award_name}" if award_name else "")
-                    result['detail'] = f"day={day_count}, award={award_name}"
+                    result['detail'] = f"day={day_count}, award={award_name}, points={points}"
                 else:
                     result['success'] = True
                     result['message'] = f"今日已签到，连续{day_count}天"
@@ -974,6 +1025,14 @@ class AccountManager:
         sign_result = executor.sign_in()
         sign_results.append(sign_result)
         self.logger.info(f"[{sign_result['channel']}] {sign_result['message']}")
+
+        # APP签到失败后重试
+        if not app_sign_result['success']:
+            self.logger.info('APP签到首次失败，将在其他签到后尝试重试...')
+            time.sleep(1)
+            app_sign_retry = executor.app_sign_in()
+            sign_results[0] = app_sign_retry
+            self.logger.info(f"[{app_sign_retry['channel']}] 重试结果: {app_sign_retry['message']}")
         
         # 如果小程序签到因代理问题失败，进行重试并更新 sign_results
         if not sign_result['success'] and '活动太火爆' in sign_result['message']:
@@ -1007,17 +1066,24 @@ class AccountManager:
                     if retry == max_retries - 1:
                         self.logger.error(f'重新登录异常: {str(e)[:100]}，已重试{max_retries}次')
         
+        # 计算签到获得的积分
+        sign_points = 0
+        for sr in sign_results:
+            if sr['success']:
+                sign_points += sr.get('points', 0)
+        
         # 执行其他任务
         points_before, points_after = executor.run_all_tasks()
-        points_earned = points_after - points_before
+        task_points = points_after - points_before          # 任务获得的积分
+        total_points_earned = task_points + sign_points     # 今日总获得积分
         
-        # 返回统计信息（注意加入 sign_results）
+        # 返回统计信息
         return {
             'success': True,
             'phone': self.phone,
-            'points_before': points_before,
-            'points_after': points_after,
-            'points_earned': points_earned,
+            'points_before': points_before,      # 签到后、任务前的积分
+            'points_after': points_after,        # 全部完成后的积分
+            'points_earned': total_points_earned, # 包含签到+任务的总获得积分
             'sign_results': sign_results
         }
 
