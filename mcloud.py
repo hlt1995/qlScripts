@@ -284,7 +284,7 @@ def print_startup_info(account_count):
 
 
 def print_device_id_notice():
-    print("变量格式: Authorization值#手机号#deviceId")
+    print("变量格式: Authorization值#手机号")
 
 
 def print_storage_path_notice():
@@ -340,7 +340,7 @@ class YP:
 
             parts = cookie.split("#")
             if len(parts) < 2:
-                raise ValueError(f"⚠️ 变量值格式错误，需要: Authorization值#手机号#deviceId")
+                raise ValueError(f"⚠️ 变量值格式错误，需要: Authorization值#手机号")
 
             self.Authorization = normalize_authorization(parts[0])
             self.account = parts[1].strip()
@@ -574,7 +574,7 @@ class YP:
             self.surplus_num()
             self.log(f'\n🔥 热门任务')
             self.backup_cloud()
-            self.log(f'\n📧 139邮箱任务')
+            # self.log(f'\n📧 139邮箱任务')
             self.get_tasklist(url = 'newsign_139mail', app_type = 'email_app')
             self.receive()
             global all_logs
@@ -1204,19 +1204,22 @@ class YP:
 
     def get_cloud_task_groups(self):
         return [
-            ('beiyong1', '\n🎁 五一福利任务'),
+            ('beiyong1', '\n🎁 福利任务'),
             ('cloudEmail', '\n📮 联动任务'),
-            ('time', '\n✨ 新版热门任务'),
+            ('time', '\n✨ 热门任务'),
             ('day', '\n📆 云盘每日任务'),
             ('month', '\n📆 云盘每月任务'),
         ]
 
     def query_cloud_task(self, task_id, group='time'):
-        return_data = self.request_market_json(f'{self.market_base_url}/market/signin/task/taskListV2', params = {
-            'marketname': 'sign_in_3',
-            'clientVersion': self.client_version,
-            'group': group,
-        })
+        return_data = self.request_market_json(
+            f'{self.market_base_url}/market/signin/task/taskListV2',
+            method="POST",
+            data={
+                'marketname': 'sign_in_3',
+                'clientVersion': self.client_version,
+                'group': group,
+            })
         if not return_data or return_data.get('code') != 0:
             return None
         for task in return_data.get('result', {}).get(group, []):
@@ -1308,11 +1311,14 @@ class YP:
 
     def get_cloud_tasklist_v2(self):
         for group, title in self.get_cloud_task_groups():
-            return_data = self.request_market_json(f'{self.market_base_url}/market/signin/task/taskListV2', params = {
-                'marketname': 'sign_in_3',
-                'clientVersion': self.client_version,
-                'group': group,
-            })
+            return_data = self.request_market_json(
+                f'{self.market_base_url}/market/signin/task/taskListV2',
+                method="POST",
+                data={
+                    'marketname': 'sign_in_3',
+                    'clientVersion': self.client_version,
+                    'group': group,
+                })
             if not return_data:
                 self.log(f'获取任务列表失败: {group}')
                 continue
