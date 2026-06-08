@@ -3,7 +3,14 @@
 ```
 ql repo https://gitee.com/hlt1995/qlScripts.git "" "Backup" "" "" "js|sh|py"
 ```
-
+>NodeJS依赖
+```
+xmldom node-rsa@1.1.1 crypto-js 
+```
+>Python3依赖
+```
+requests httpx pycryptodome
+```
 ---
 
 ## 📝 脚本说明
