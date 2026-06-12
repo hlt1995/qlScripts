@@ -59,7 +59,7 @@ requests httpx pycryptodome
 
 >搜索 `https://app.17u.cn/welfarecenter/index/signIndex` 的请求头，找到`appToken` `device`
 
->CK格式：`手机号#appToken#device` `@`
+>CK格式：`手机号#appToken#device` `&`
 
 
 ### 🧴 薇诺娜小薇森林
