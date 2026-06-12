@@ -4,15 +4,15 @@
 """
 开启抓包，进入app 进入'领福利'界面，点击签到，查看https://app.17u.cn/welfarecenter/index/signIndex请求头
 提取变量： apptoken、device
-变量格式： phone#apptoken#device，多个账号用@隔开
+变量格式： phone#apptoken#device，多个账号用&或@隔开
 
 """
-import asyncio
 import os
 import time
+import httpx
+import asyncio
 from datetime import datetime
 
-import httpx
 
 # ==================== Bark 推送配置 ====================
 # 添加自定义参数，也可以留空
@@ -32,15 +32,20 @@ os.environ["PUSH_SWITCH"] = PUSH_SWITCH
 def fn_print(message):
     print(message)
 
-def get_env(env_name, separator="&"):
+def get_env(env_name, separator="@"):
     env_value = os.getenv(env_name)
     if not env_value:
         return []
-    return env_value.split(separator)
+    if "@" in env_value:
+        return env_value.split("@")
+    elif "&" in env_value:
+        return env_value.split("&")
+    else:
+        return [env_value]
 
 notify_message = "\n"
 
-tc_cookies = get_env("tc_cookie", "@")
+tc_cookies = get_env("tc_cookie")
 
 
 class Tclx:
@@ -64,11 +69,15 @@ class Tclx:
             'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 TcTravel/11.0.0 tctype/wk',
             'referer': 'https://m.17u.cn/',
             'device': self.device,
+            'denc': 'br',
+            'sv': '3',
+            'secver': '4',
+            'aenc': 'br',
+            'Os-Type': '1',
             'sec-fetch-dest': 'empty'
         }
         self.account_result = ""
-        self.sign_success = False  # 新增：记录签到是否成功
-        self.token_invalid = False  # 新增：记录token是否失效
+        self.token_invalid = False  # 标记token是否失效
 
     def account_print(self, message):
         """只打印到控制台，不收集到通知中"""
@@ -79,6 +88,7 @@ class Tclx:
         return datetime.now().strftime('%Y-%m-%d')
 
     async def sign_in(self):
+        """仅用于验证 token 有效性及获取里程，不执行签到操作"""
         try:
             response = await self.client.post(
                 url="/index/signIndex",
@@ -88,18 +98,18 @@ class Tclx:
             data = response.json()
             if data['code'] != 2200:
                 self.account_print("token失效了，请更新")
-                self.token_invalid = True  # 标记token失效
+                self.token_invalid = True
                 return None
             else:
-                today_sign = data['data']['todaySign']
                 mileage = data['data']['mileageBalance']['mileage']
-                self.account_print(f"今日{'已' if today_sign else '未'}签到，当前剩余里程{mileage}！")
-                return today_sign
+                self.account_print(f"Token验证成功，当前里程{mileage}")
+                return data['data']['todaySign']
         except Exception as e:
             self.account_print(f"签到请求异常！{e}")
             return None
 
     async def do_sign_in(self):
+        """原本的签到函数，本次不再调用"""
         today_date = await self.get_today_date()
         try:
             response = await self.client.post(
@@ -216,14 +226,10 @@ class Tclx:
                 self.account_print("获取积分信息失败了")
                 return None
             else:
-                cycle_sign_num = data['data']['cycleSighNum']
-                continuous_history = data['data']['continuousHistory']
                 mileage = data['data']['mileageBalance']['mileage']
                 today_mileage = data['data']['mileageBalance']['todayMileage']
-                
-                self.account_print(f"本月签到{cycle_sign_num}天，连续签到{continuous_history}天，今日共获取{today_mileage}里程，当前剩余里程{mileage}")
+                self.account_print(f"当前剩余里程{mileage}，今日获取{today_mileage}里程")
                 return {
-                    'cycle_sign_num': cycle_sign_num,
                     'mileage': mileage,
                     'today_mileage': today_mileage
                 }
@@ -232,24 +238,12 @@ class Tclx:
             return None
 
     async def run(self):
-        # 初始化账号结果
         self.account_result = f"📱 账号：{self.phone}\n"
-        
-        # 首先检查签到状态
         today_sign = await self.sign_in()
         if today_sign is None:
-            # token失效的情况
             self.account_result += "❌ token失效，请更新\n\n"
             return
             
-        if today_sign:
-            self.account_print("今日已签到，开始获取任务列表")
-            self.sign_success = True
-        else:
-            self.account_print("今日未签到，开始执行签到")
-            self.sign_success = await self.do_sign_in()
-            
-        # 获取任务列表并执行任务
         tasks = await self.get_task_list()
         if tasks:
             for task in tasks:
@@ -263,22 +257,11 @@ class Tclx:
                     if await self.finsh_task(task_id):
                         await self.receive_reward(task_id)
         
-        # 获取最终的里程信息并构建结果
         mileage_info = await self.get_mileage_info()
         if mileage_info:
-            if self.sign_success:
-                status_icon = "✨️"
-                result_text = f"{status_icon} 签到成功，本月签到【{mileage_info['cycle_sign_num']}】天"
-            else:
-                status_icon = "❗️"
-                result_text = f"{status_icon} 签到暂不可用，请前往APP手动签到！\n🈷️ 本月签到【{mileage_info['cycle_sign_num']}】天"
-                
-            self.account_result = f"📱 账号：{self.phone}\n{result_text}\n🎁 当前里程: 【{mileage_info['mileage']}】(+{mileage_info['today_mileage']})\n\n"
+            self.account_result = f"📱 账号：{self.phone}\n🎁 当前里程: 【{mileage_info['mileage']}】(+{mileage_info['today_mileage']})\n\n"
         else:
-            if self.sign_success:
-                self.account_result += "✅ 签到成功（但获取里程信息失败）\n\n"
-            else:
-                self.account_result += "❌ 签到失败且获取里程信息失败\n\n"
+            self.account_result = f"📱 账号：{self.phone}\n❌ 获取里程信息失败\n\n"
 
 
 async def main():
@@ -306,7 +289,6 @@ async def main():
 if __name__ == '__main__':
     has_token_invalid = asyncio.run(main())
     
-    # 推送通知
     if PUSH_SWITCH == '1' or has_token_invalid:
         try:
             from notify import send
