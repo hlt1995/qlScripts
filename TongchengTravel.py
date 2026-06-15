@@ -46,7 +46,9 @@ def get_env(env_name, separator="@"):
 notify_message = "\n"
 
 tc_cookies = get_env("tc_cookie")
-
+if not tc_cookies:
+    print("❌ 未检测到账号信息，请检查环境变量 tc_cookie 是否正确设置")
+    exit(0)
 
 class Tclx:
     def __init__(self, cookie):
